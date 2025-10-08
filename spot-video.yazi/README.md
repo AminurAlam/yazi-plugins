@@ -1,11 +1,12 @@
 # Installation
 
 ```sh
-ya pkg add AminurAlam/yazi-plugins:spot-video
+ya pkg add AminurAlam/yazi-plugins:spot AminurAlam/yazi-plugins:spot-video
 ```
 
 # Dependencies
 
+- [spot.yazi](/spot.yazi)
 - `ffprobe` (part of ffmpeg)
 
 # Usage
