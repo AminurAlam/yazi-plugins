@@ -12,6 +12,8 @@ ya pkg add AminurAlam/yazi-plugins:spot
 
 # Usage
 
+this plugin can be used as a spotter for basic metadata or used to build your own custom spotter
+
 in `~/.config/yazi/plugins/spot-custom.yazi/main.lua`
 
 ```lua
@@ -43,4 +45,15 @@ prepend_spotters = [
   { name = "audio/*", run = "spot" }, # use the plugin with default settings
   { name = "video/*", run = "spot-custom" }, # use your custom spotter
 ]
+```
+
+in `~/.config/yazi/init.lua`
+
+```lua
+require('spot'):setup {
+        height = 20,
+        width = 60,
+        render_metadata = true,
+        render_plugins = false,
+}
 ```

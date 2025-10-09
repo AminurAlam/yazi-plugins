@@ -43,6 +43,7 @@ local get_stream_info = function(file)
     for i, v in ipairs(t.streams) do
       ya.dbg(v)
       if v.tags then
+        -- TODO: yt link from comments
         data[i] = {
           (v.codec_name or tostring(i)),
           (v.tags.title or v.tags.language or '') .. format_br(v, stream),
