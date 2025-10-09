@@ -51,9 +51,9 @@ in `~/.config/yazi/init.lua`
 
 ```lua
 require('spot'):setup {
-        height = 20,
-        width = 60,
-        render_metadata = true,
-        render_plugins = false,
+  height = 20,
+  width = 60,
+  render_metadata = true,
+  render_plugins = false,
 }
 ```
