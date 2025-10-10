@@ -52,7 +52,7 @@ local audio_mediainfo = function(file)
 
   local output, err = cmd:output()
   if not output then
-    return audio_ffprobe(job.file), Err('Failed to start `mediainfo`, error: %s', err)
+    return audio_ffprobe(file), Err('Failed to start `mediainfo`, error: %s', err)
   end
 
   local json = ya.json_decode(output.stdout)
@@ -107,6 +107,7 @@ local audio_mediainfo = function(file)
   return data
 end
 
+-- TODO: switch completely to ffprobe
 function M:spot(job) require('spot'):spot(job, audio_mediainfo(job.file)) end
 
 return M
