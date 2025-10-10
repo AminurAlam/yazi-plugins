@@ -4,13 +4,15 @@ local audio_ffprobe = function(file)
   -- stylua: ignore
   local cmd = Command('ffprobe'):arg {
     '-v', 'quiet',
-    '-show_entries', 'stream_tags:format',
+    '-show_entries', 'stream_tags:format:stream',
     '-of', 'json=c=1',
     file.name
   }
 
   local output, err = cmd:output()
-  if not output then return nil, Err('Failed to start `ffprobe`, error: %s', err) end
+  if not output then
+    return audio_mediainfo(file), Err('Failed to start `ffprobe`, error: %s', err)
+  end
 
   local json = ya.json_decode(output.stdout)
   if not json then
@@ -18,29 +20,46 @@ local audio_ffprobe = function(file)
   elseif type(json) ~= 'table' then
     return nil, Err('Invalid `ffprobe` output: %s', output.stdout)
   end
-  local tags = json.format.tags
+  ya.dbg(json)
 
-  local aar = tags.album_artist or ''
-  local ar = tags.ARTIST or ''
-  local date = (tags.DATE or '') .. ' / ' .. (tags.ORIGINALDATE or '')
-  local c = json.streams[1] and json.streams[1].tags and json.streams[1].tags.comment or ''
+  local stream = json.streams[1]
+  local tags = json.format.tags or stream.tags
 
-  local data = {
-    {
+  local data = {}
+  local title, album, aar, ar =
+    tags.TITLE or tags.title or '',
+    tags.ALBUM or tags.album or '',
+    tags.ALBUM_ARTIST or tags.album_artist or '',
+    tags.ARTIST or tags.artist or ''
+
+  if title .. album .. ar .. aar ~= '' then
+    local cdata = json.streams[2]
+    local date = tags.DATE or tags.date or ''
+    local c = ''
+    local artist = ar
+
+    if tags.ORIGINALDATE and tags.ORIGINALDATE ~= '' then
+      date = date .. ' / ' .. tags.ORIGINALDATE
+    end
+    if (aar ~= '') and (aar ~= ar) then artist = artist .. ' / ' .. aar end
+    if cdata then c = cdata.codec_name .. ' ' .. cdata.width .. 'x' .. cdata.height end
+
+    data[#data + 1] = {
       title = 'General',
-      { 'Title', tags.TITLE },
-      { 'Album', tags.ALBUM },
-      { 'Artist', ar .. (aar ~= ar and (' / ' .. aar) or '') },
-      { 'Genre', tags.GENRE },
+      { 'Title', title },
+      { 'Album', album },
+      { 'Artist', artist },
+      { 'Genre', tags.GENRE or tags.genre },
       { 'Date', date },
       c ~= '' and { 'Cover art', c } or nil,
-    },
-    {
-      title = 'Audio',
-      { 'Format', json.format.format_name },
-      { 'BitRate', tonumber((json.format.bit_rate or 0) // 1000) .. ' kb/s' },
-      { 'Channels', tostring(json.format.nb_streams) },
-    },
+    }
+  end
+
+  data[#data + 1] = {
+    title = 'Audio',
+    { 'Format', json.format.format_name },
+    { 'BitRate', tonumber((json.format.bit_rate or 0) // 1000) .. ' kb/s' },
+    { 'Channels', tostring(json.format.nb_streams) },
   }
 
   ya.dbg(data)
@@ -51,9 +70,7 @@ local audio_mediainfo = function(file)
   local cmd = Command('mediainfo'):arg { '--Output=JSON', file.name }
 
   local output, err = cmd:output()
-  if not output then
-    return audio_ffprobe(file), Err('Failed to start `mediainfo`, error: %s', err)
-  end
+  if not output then return nil, Err('Failed to start `mediainfo`, error: %s', err) end
 
   local json = ya.json_decode(output.stdout)
   if not json then
@@ -73,11 +90,12 @@ local audio_mediainfo = function(file)
   if title .. album .. ar .. aar ~= '' then
     local csize = ''
     local date = general.Recorded_Date
+    local artist = ar
 
     if general.extra and general.extra.ORIGINALDATE then
       date = date .. ' / ' .. general.extra.ORIGINALDATE
     end
-
+    if (aar ~= '') and (aar ~= ar) then artist = artist .. ' / ' .. aar end
     if image then csize = image.Format .. ' ' .. image.Height .. 'x' .. image.Width end
 
     data[#data + 1] = {
@@ -107,7 +125,6 @@ local audio_mediainfo = function(file)
   return data
 end
 
--- TODO: switch completely to ffprobe
-function M:spot(job) require('spot'):spot(job, audio_mediainfo(job.file)) end
+function M:spot(job) require('spot'):spot(job, audio_ffprobe(job.file)) end
 
 return M
