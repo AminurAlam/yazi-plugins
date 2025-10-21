@@ -2,8 +2,8 @@
 
 # Features
 
-- case insensitive
-- supports aliases
+- case insensitive matching
+- supports aliases for different languages
 - ignores leading non-alphabet
 
 # Installation
@@ -22,8 +22,6 @@ prepend_keymap = [
   { on = "f", run = "plugin fchar", desc = "Jump to char" },
 ]
 ```
-
-# Configuration
 
 in `~/.config/yazi/init.lua`
 
