@@ -12,6 +12,8 @@ ya pkg add AminurAlam/yazi-plugins:coverart
 
 # Usage
 
+in `~/.config/yazi/yazi.toml`
+
 ```toml
 [plugin]
 prepend_previewers = [
