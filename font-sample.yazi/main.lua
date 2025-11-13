@@ -6,9 +6,11 @@ local get_config = ya.sync(
   function(st)
     return st.opts
       or {
-        text = 'ABCD abcd\noO0 1lI\n1234567890\n!@#$%^&*()[]{}\n== <= >= !=\nこれ直楽糸',
-        canvas_size = '700x800',
+        text = 'ABCD abcd\noO0 1lI \n0123456789\n@#$%%&=()[]{};\n== <= >= != ffi\n및개요これ直楽糸',
+        canvas_size = '750x800',
         font_size = 80,
+        fg = 'black',
+        bg = 'white',
       }
   end
 )
@@ -55,9 +57,9 @@ function M:preload(job)
     tostring(job.file.url),
     '-pointsize',
     opts.font_size,
-    'xc:white',
+    'xc:' .. opts.bg,
     '-fill',
-    'black',
+    opts.fg,
     '-annotate',
     '+0+0',
     opts.text,
