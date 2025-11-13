@@ -1,14 +1,18 @@
 Programming font with ligatures
-![JetBrainsMono](https://github.com/user-attachments/assets/61626816-1334-4f9d-9e47-9ccdd42db03d)
+
+<img src="https://github.com/user-attachments/assets/61626816-1334-4f9d-9e47-9ccdd42db03d" alt="Programming font with ligatures" width="300">
 
 Programming font with NerdFont icons (see glasses icon in second row)
-![SauceCodePro](https://github.com/user-attachments/assets/092bcfaf-062b-4866-9bea-c53ae637471c)
+
+<img src="https://github.com/user-attachments/assets/092bcfaf-062b-4866-9bea-c53ae637471c" alt="Programming font with NerdFont icons" width="300">
 
 Font with CJK characters
-![NotoSansCJK](https://github.com/user-attachments/assets/0fd08a3d-9b56-43cf-b2ad-569b07273349)
+
+<img src="https://github.com/user-attachments/assets/0fd08a3d-9b56-43cf-b2ad-569b07273349" alt="Font with CJK characters" width="300">
 
 Font with custom text
-![GrapeNuts](https://github.com/user-attachments/assets/b93acb09-09df-4092-84b4-33384af6e0b6)
+
+<img src="https://github.com/user-attachments/assets/b93acb09-09df-4092-84b4-33384af6e0b6" alt="Font with custom text" width="300">
 
 # Features
 
