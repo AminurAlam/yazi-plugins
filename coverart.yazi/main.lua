@@ -1,32 +1,85 @@
 local M = {}
 
+local audio_ffprobe = function(file)
+  -- stylua: ignore
+  local cmd = Command('ffprobe'):arg {
+    '-v', 'quiet',
+    '-show_entries', 'stream_tags:format:stream',
+    '-of', 'json=c=1',
+    file.name
+  }
+
+  local output, err = cmd:output()
+  if not output then
+    return audio_mediainfo(file), Err('Failed to start `ffprobe`, error: %s', err)
+  end
+
+  local json = ya.json_decode(output.stdout)
+  if not json then
+    return nil, Err('Failed to decode `ffprobe` output: %s', output.stdout)
+  elseif type(json) ~= 'table' then
+    return nil, Err('Invalid `ffprobe` output: %s', output.stdout)
+  end
+  ya.dbg(json)
+
+  local stream = json.streams[1]
+  local tags = json.format.tags or stream.tags
+
+  local data = {}
+  local title, album, aar, ar =
+    tags.TITLE or tags.title or '',
+    tags.ALBUM or tags.album or '',
+    tags.ALBUM_ARTIST or tags.album_artist or '',
+    tags.ARTIST or tags.artist or ''
+
+  if title .. album .. ar .. aar ~= '' then
+    local cdata = json.streams[2]
+    local date = tags.DATE or tags.date or ''
+    local c = ''
+    local artist = ar
+
+    if tags.ORIGINALDATE and tags.ORIGINALDATE ~= '' then
+      date = date .. ' / ' .. tags.ORIGINALDATE
+    end
+    if (aar ~= '') and (aar ~= ar) then artist = artist .. ' / ' .. aar end
+    if cdata then c = cdata.codec_name .. ' ' .. cdata.width .. 'x' .. cdata.height end
+
+    data = {
+      ui.Line(string.format('%s - %s', artist, title)),
+      ui.Line(string.format('%s: %s', 'Album', album)),
+      ui.Line(string.format('%s: %s', 'Genre', tags.GENRE or tags.genre)),
+      ui.Line(string.format('%s: %s', 'Date', date)),
+      c ~= '' and ui.Line(string.format('%s: %s', 'Cover art', c)) or nil,
+    }
+  end
+
+  local br = tonumber((json.format.bit_rate or 0) // 1000) .. ' kb/s'
+  table.insert(data, ui.Line(string.format('%s: %s', 'Format', json.format.format_name)))
+  table.insert(data, ui.Line(string.format('%s: %s', 'BitRate', br)))
+  table.insert(data, ui.Line(string.format('%s: %s', 'Channels', tostring(json.format.nb_streams))))
+
+  ya.dbg(data)
+  return data
+end
+
 function M:peek(job)
   local start, cache = os.clock(), ya.file_cache(job)
-  if not cache then return end
-
   local ok, err = self:preload(job)
-  if not ok or err then return ya.preview_widget(job, err) end
 
-  ya.sleep(math.max(0, rt.preview.image_delay / 1000 + start - os.clock()))
+  local img_area
+  if cache and fs.cha(url) then
+    ya.sleep(math.max(0, rt.preview.image_delay / 1000 + start - os.clock()))
+    img_area, err = ya.image_show(cache, job.area)
+  end
 
-  local _, err = ya.image_show(cache, job.area)
-  ya.preview_widget(job, err)
-  -- local output = Command('mediainfo')
-  --   :arg({
-  --     tostring(job.file.name),
-  --     ''
-  --       .. [[--Output=General;%Performer% - %Track%\nAlbum: %Album%\n]]
-  --       .. [[\nGenre: %Genre%\nReleased: %Recorded_Date%]],
-  --   })
-  --   :stdout(Command.PIPED)
-  --   :output().stdout .. Command('mediainfo')
-  --   :arg({
-  --     tostring(job.file.name),
-  --     [[--Output=Image;\nCover: %Format% %Width%x%Height% %StreamSize/String1%]],
-  --   })
-  --   :stdout(Command.PIPED)
-  --   :output().stdout
-  -- ya.preview_widgets(job, { ui.Text.parse(output):area(job.area) })
+  ya.preview_widgets(job, {
+    ui.Text(audio_ffprobe(job.file)):area(ui.Rect {
+      x = job.area.x,
+      y = job.area.y + (img_area and img_area.h or 0),
+      w = job.area.w,
+      h = job.area.h,
+    }),
+  })
 end
 
 function M:seek(job) end

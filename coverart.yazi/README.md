@@ -1,4 +1,4 @@
-<img width="1920" height="1080" alt="Screenshot_20251008_164140_grim" src="https://github.com/user-attachments/assets/e1dde089-f880-458b-bff6-1c252d52b549" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/731bd9b8-b963-43c9-866e-4250885d0bbe" />
 
 # Installation
 
