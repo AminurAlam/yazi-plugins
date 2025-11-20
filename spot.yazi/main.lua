@@ -47,7 +47,13 @@ end
 
 local function tbl_strict_extend(default, config)
   if type(default) ~= type(config) then return default end
-  if type(default) ~= 'table' then return config or default end
+  if type(default) ~= 'table' then
+    if config ~= nil then
+      return config
+    else
+      return default
+    end
+  end
 
   for key, _ in pairs(default) do
     default[key] = tbl_strict_extend(default[key], config[key])
