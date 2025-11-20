@@ -29,6 +29,7 @@ local permission = function(file)
 end
 
 local hash = function(file)
+  -- TODO: make the size limit configurable
   if file.cha.len > 100000000 then return '' end -- 100M
   local cmd = Command('cksum'):arg { '-acrc', file.name }
 

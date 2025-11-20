@@ -3,7 +3,7 @@
 # Installation
 
 ```sh
-ya pkg add AminurAlam/yazi-plugins:coverart
+ya pkg add AminurAlam/yazi-plugins:preview-audio
 ```
 
 # Dependencies
@@ -18,10 +18,10 @@ in `~/.config/yazi/yazi.toml`
 [plugin]
 prepend_previewers = [
   { mime = 'audio/mpegurl', run = 'code' }, # ignore .m3u files
-  { mime = 'audio/*', run = 'coverart' },
+  { mime = 'audio/*', run = 'preview-audio' },
 ]
 prepend_preloaders = [
   { mime = 'audio/mpegurl', run = 'code' }, # ignore .m3u files
-  { mime = 'audio/*', run = 'coverart' },
+  { mime = 'audio/*', run = 'preview-audio' },
 ]
 ```

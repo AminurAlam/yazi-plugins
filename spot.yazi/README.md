@@ -8,7 +8,7 @@ ya pkg add AminurAlam/yazi-plugins:spot
 
 # Dependencies
 
-- `cksum` (part of GNU coreutils)
+- `cksum` (part of GNU coreutils) (optional)
 
 # Usage
 
