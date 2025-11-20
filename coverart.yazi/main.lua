@@ -10,9 +10,7 @@ local audio_ffprobe = function(file)
   }
 
   local output, err = cmd:output()
-  if not output then
-    return audio_mediainfo(file), Err('Failed to start `ffprobe`, error: %s', err)
-  end
+  if not output then return {}, Err('Failed to start `ffprobe`, error: %s', err) end
 
   local json = ya.json_decode(output.stdout)
   if not json then
@@ -67,7 +65,7 @@ function M:peek(job)
   local ok, err = self:preload(job)
 
   local img_area
-  if cache and fs.cha(url) then
+  if cache and fs.cha(cache) then
     ya.sleep(math.max(0, rt.preview.image_delay / 1000 + start - os.clock()))
     img_area, err = ya.image_show(cache, job.area)
   end
