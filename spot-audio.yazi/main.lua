@@ -23,7 +23,7 @@ local audio_ffprobe = function(file)
   ya.dbg(json)
 
   local stream = json.streams[1]
-  local tags = json.format.tags or stream.tags
+  local tags = json.format.tags or stream.tags or stream
 
   local data = {}
   local title, album, aar, ar =

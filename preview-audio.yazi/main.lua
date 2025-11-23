@@ -21,7 +21,7 @@ local audio_ffprobe = function(file)
   ya.dbg(json)
 
   local stream = json.streams[1]
-  local tags = json.format.tags or stream.tags
+  local tags = json.format.tags or stream.tags or stream
 
   local data = {}
   local title, album, aar, ar =
@@ -56,7 +56,6 @@ local audio_ffprobe = function(file)
   table.insert(data, ui.Line(string.format('%s: %s', 'BitRate', br)))
   table.insert(data, ui.Line(string.format('%s: %s', 'Channels', tostring(json.format.nb_streams))))
 
-  ya.dbg(data)
   return data
 end
 
