@@ -2,18 +2,16 @@ local M = {}
 
 local set_config = ya.sync(function(st, opts) st.opts = opts end)
 
-local get_config = ya.sync(
-  function(st)
-    return st.opts
-      or {
-        text = 'ABCD abcd\noO0 1lI \n0123456789\n@#$%%&=()[]{};\n== <= >= != ffi\n및개요これ直楽糸',
-        canvas_size = '750x800',
-        font_size = 80,
-        fg = 'black',
-        bg = 'white',
-      }
-  end
-)
+local get_config = ya.sync(function(st)
+  return st.opts
+    or { --
+      text = 'ABCDEF abcdef\n0123456789 \noO08 iIlL1 g9qCGQ\n8%& <([{}])>\n.,;: @#$-_="\n== <= >= != ffi\nâéùïøçÃĒÆœ\n및개요これ直楽糸',
+      canvas_size = '750x800',
+      font_size = 80,
+      fg = 'black',
+      bg = 'white',
+    }
+end)
 
 local function tbl_strict_extend(default, config)
   if type(default) ~= type(config) then return default end

@@ -1,25 +1,22 @@
-Programming font with ligatures
+Programming font with ligatures and NerdFont icon
 
-<img src="https://github.com/user-attachments/assets/61626816-1334-4f9d-9e47-9ccdd42db03d" alt="Programming font with ligatures" width="300">
-
-Programming font with NerdFont icons (see glasses icon in second row)
-
-<img src="https://github.com/user-attachments/assets/092bcfaf-062b-4866-9bea-c53ae637471c" alt="Programming font with NerdFont icons" width="300">
+<img width="400" alt="JetBrainsMono font preview" src="https://github.com/user-attachments/assets/f5725338-6e37-410d-a290-86fdaec817eb" />
 
 Font with CJK characters
 
-<img src="https://github.com/user-attachments/assets/0fd08a3d-9b56-43cf-b2ad-569b07273349" alt="Font with CJK characters" width="300">
+<img width="400" alt="NotoSans CJK font preview" src="https://github.com/user-attachments/assets/8e34bb7f-6004-411b-9e92-6a06e40e5982" />
 
 Font with custom text
 
-<img src="https://github.com/user-attachments/assets/b93acb09-09df-4092-84b4-33384af6e0b6" alt="Font with custom text" width="300">
+<img width="400" alt="GrapeNuts font with lorem ipsum as text" src="https://github.com/user-attachments/assets/d4fd834a-4066-4a3e-9644-388d32cb7d03" />
 
 # Features
 
 - easily check for common font features
   - `oO0`, `1lI` distinctions
+  - nerd font icons
   - ligatures
-  - nerd font
+  - diacritics
 - check if font has CJK characters
 - define custom text to show
 - define custom colours
@@ -56,7 +53,7 @@ in `~/.config/yazi/init.lua`
 ```lua
 -- default config
 require('font-sample'):setup {
-  text = 'ABCD abcd\noO0 1lI \n0123456789\n@#$%%&=()[]{};\n== <= >= != ffi\n및개요これ直楽糸',
+  text = 'ABCDEF abcdef\n0123456789 \noO08 iIlL1 g9qCGQ\n8%& <([{}])>\n.,;: @#$-_="\n== <= >= != ffi\nâéùïøçÃĒÆœ\n및개요これ直楽糸',
   canvas_size = '750x800',
   font_size = 80,
   -- https://imagemagick.org/script/color.php
