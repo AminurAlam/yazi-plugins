@@ -69,7 +69,7 @@ function M:preload(job)
     '-annotate',
     '+0+0',
     opts.text,
-    'JPG:' .. tostring(cache),
+    'PNG:' .. tostring(cache),
   }):status()
 
   if status then
