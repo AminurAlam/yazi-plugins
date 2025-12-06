@@ -1,5 +1,8 @@
 local M = {}
 
+---@param e table
+---@param stream string
+---@return string
 local format_br = function(e, stream)
   if stream == 'Subtitles' then return '' end
   local br = e.bit_rate or e.tags.BPS or e.tags['BPS-' .. (e.tags.language or 'eng')]
@@ -14,11 +17,12 @@ local format_br = function(e, stream)
     postfix = 'm'
   end
   if br == br // 1 then return string.format(' @%d%sbps', br, postfix) end
-  return string.format(' @%.2f%sbps', br, postfix)
+  return string.format('@%.2f%sbps', br, postfix)
 end
 
 local get_stream_info = function(file)
   local sections = {}
+
   for _, stream in ipairs({ 'Video', 'Audio', 'Subtitles' }) do
     -- stylua: ignore
     local cmd = Command('ffprobe'):arg {
@@ -40,22 +44,35 @@ local get_stream_info = function(file)
     end
 
     local data = { title = stream }
+
     for i, v in ipairs(t.streams) do
       ya.dbg(v)
+
+      -- https://alexwlchan.net/2025/square-pixels/
+      local res = ' '
+        .. (v.width or v.coded_width or '')
+        .. 'x'
+        .. (v.height or v.coded_height or '')
+      if res == ' x' then res = '' end
+
       if v.tags then
         -- TODO: yt link from comments
         data[i] = {
           (v.codec_name or tostring(i)),
-          (v.tags.title or v.tags.language or '') .. format_br(v, stream),
+          (v.tags.title or v.tags.language or '') .. res .. format_br(v, stream),
         }
+      else -- probably a thumbnail
+        data[i] = { (v.codec_name or tostring(i)), res }
       end
     end
     if data[1] ~= nil then sections[#sections + 1] = data end
   end
+
   return sections
 end
 
 -- TODO: general section with duration, stream count, overall br etc
+-- videos dont have simple time in ms, subtitles do. maybe do `frames*fps` ?
 function M:spot(job) require('spot'):spot(job, get_stream_info(job.file)) end
 
 return M
