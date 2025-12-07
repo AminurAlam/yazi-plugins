@@ -4,11 +4,17 @@ local M = {}
 ---@param stream string
 ---@return string
 local format_br = function(e, stream)
-  if stream == 'Subtitles' then return '' end
+  if stream == 'Subtitles' then
+    return ''
+  end
   local br = e.bit_rate or e.tags.BPS or e.tags['BPS-' .. (e.tags.language or 'eng')]
   br = tonumber(br)
-  if not br then return '' end
-  if br == 0 then return '' end
+  if not br then
+    return ''
+  end
+  if br == 0 then
+    return ''
+  end
 
   br = br // 1000
   local postfix = 'k'
@@ -16,7 +22,9 @@ local format_br = function(e, stream)
     br = br / 1000
     postfix = 'm'
   end
-  if br == br // 1 then return string.format(' @%d%sbps', br, postfix) end
+  if br == br // 1 then
+    return string.format(' @%d%sbps', br, postfix)
+  end
   return string.format('@%.2f%sbps', br, postfix)
 end
 
@@ -34,7 +42,9 @@ local get_stream_info = function(file)
     }
 
     local output, err = cmd:output()
-    if not output then return nil, Err('Failed to start `ffprobe`, error: %s', err) end
+    if not output then
+      return nil, Err('Failed to start `ffprobe`, error: %s', err)
+    end
 
     local t = ya.json_decode(output.stdout)
     if not t then
@@ -53,7 +63,9 @@ local get_stream_info = function(file)
         .. (v.width or v.coded_width or '')
         .. 'x'
         .. (v.height or v.coded_height or '')
-      if res == ' x' then res = '' end
+      if res == ' x' then
+        res = ''
+      end
 
       if v.tags then
         -- TODO: yt link from comments
@@ -65,7 +77,9 @@ local get_stream_info = function(file)
         data[i] = { (v.codec_name or tostring(i)), res }
       end
     end
-    if data[1] ~= nil then sections[#sections + 1] = data end
+    if data[1] ~= nil then
+      sections[#sections + 1] = data
+    end
   end
 
   return sections
@@ -73,6 +87,8 @@ end
 
 -- TODO: general section with duration, stream count, overall br etc
 -- videos dont have simple time in ms, subtitles do. maybe do `frames*fps` ?
-function M:spot(job) require('spot'):spot(job, get_stream_info(job.file)) end
+function M:spot(job)
+  require('spot'):spot(job, get_stream_info(job.file))
+end
 
 return M

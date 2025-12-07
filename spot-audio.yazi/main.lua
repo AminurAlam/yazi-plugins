@@ -41,8 +41,12 @@ local audio_ffprobe = function(file)
     if tags.ORIGINALDATE and tags.ORIGINALDATE ~= '' then
       date = date .. ' / ' .. tags.ORIGINALDATE
     end
-    if (aar ~= '') and (aar ~= ar) then artist = artist .. ' / ' .. aar end
-    if cdata then c = cdata.codec_name .. ' ' .. cdata.width .. 'x' .. cdata.height end
+    if (aar ~= '') and (aar ~= ar) then
+      artist = artist .. ' / ' .. aar
+    end
+    if cdata then
+      c = cdata.codec_name .. ' ' .. cdata.width .. 'x' .. cdata.height
+    end
 
     data[#data + 1] = {
       title = 'General',
@@ -70,7 +74,9 @@ local audio_mediainfo = function(file)
   local cmd = Command('mediainfo'):arg { '--Output=JSON', file.name }
 
   local output, err = cmd:output()
-  if not output then return nil, Err('Failed to start `mediainfo`, error: %s', err) end
+  if not output then
+    return nil, Err('Failed to start `mediainfo`, error: %s', err)
+  end
 
   local json = ya.json_decode(output.stdout)
   if not json then
@@ -95,8 +101,12 @@ local audio_mediainfo = function(file)
     if general.extra and general.extra.ORIGINALDATE then
       date = date .. ' / ' .. general.extra.ORIGINALDATE
     end
-    if (aar ~= '') and (aar ~= ar) then artist = artist .. ' / ' .. aar end
-    if image then csize = image.Format .. ' ' .. image.Height .. 'x' .. image.Width end
+    if (aar ~= '') and (aar ~= ar) then
+      artist = artist .. ' / ' .. aar
+    end
+    if image then
+      csize = image.Format .. ' ' .. image.Height .. 'x' .. image.Width
+    end
 
     data[#data + 1] = {
       title = 'General',
@@ -125,6 +135,8 @@ local audio_mediainfo = function(file)
   return data
 end
 
-function M:spot(job) require('spot'):spot(job, audio_ffprobe(job.file)) end
+function M:spot(job)
+  require('spot'):spot(job, audio_ffprobe(job.file))
+end
 
 return M

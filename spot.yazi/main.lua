@@ -1,24 +1,28 @@
 local M = {}
 
-local set_config = ya.sync(function(st, opts) st.opts = opts end)
+local set_config = ya.sync(function(st, opts)
+  st.opts = opts
+end)
 
-local get_config = ya.sync(
-  function(st)
-    return st.opts
-      or {
-        height = 20,
-        width = 60,
-        render_metadata = true,
-        render_plugins = false,
-      }
-  end
-)
+local get_config = ya.sync(function(st)
+  return st.opts
+    or {
+      height = 20,
+      width = 60,
+      render_metadata = true,
+      render_plugins = false,
+    }
+end)
 
 local permission = function(file)
-  if not file then return '' end
+  if not file then
+    return ''
+  end
 
   local perm = file.cha:perm()
-  if not perm then return '' end
+  if not perm then
+    return ''
+  end
 
   local spans = ''
   for i = 1, #perm do
@@ -30,24 +34,34 @@ end
 
 local hash = function(file)
   -- TODO: make the size limit configurable
-  if file.cha.len > 100000000 then return '' end -- 100M
+  if file.cha.len > 100000000 then
+    return ''
+  end -- 100M
   local cmd = Command('cksum'):arg { '-acrc', file.name }
 
   local output, err = cmd:output()
-  if not output then return '', Err('Failed to start `ffprobe`, error: %s', err) end
+  if not output then
+    return '', Err('Failed to start `ffprobe`, error: %s', err)
+  end
   return output.stdout:gsub('^(%d+ %d+).*', '%1')
 end
 
 local fileTimestamp = function(file, type)
   local file = file
-  if not file or file.cha.is_link then return '' end
+  if not file or file.cha.is_link then
+    return ''
+  end
   local time = math.floor(file.cha[type] or 0)
-  if time == 0 then return '' end
+  if time == 0 then
+    return ''
+  end
   return tostring(os.date('%Y-%m-%d %H:%M', time))
 end
 
 local function tbl_strict_extend(default, config)
-  if type(default) ~= type(config) then return default end
+  if type(default) ~= type(config) then
+    return default
+  end
   if type(default) ~= 'table' then
     if config ~= nil then
       return config
@@ -63,7 +77,9 @@ local function tbl_strict_extend(default, config)
   return default
 end
 
-function M:setup(config) set_config(tbl_strict_extend(get_config(), config)) end
+function M:setup(config)
+  set_config(tbl_strict_extend(get_config(), config))
+end
 
 function M:render_table(job, extra, config)
   local styles = {
@@ -76,7 +92,9 @@ function M:render_table(job, extra, config)
   -- TODO: render multiline if '\n' is present
   ---@param section table
   local add_section = function(section)
-    if #rows ~= 0 then rows[#rows + 1] = ui.Row({}) end
+    if #rows ~= 0 then
+      rows[#rows + 1] = ui.Row({})
+    end
     rows[#rows + 1] = ui.Row({ section.title }):style(styles.header)
     for _, value in ipairs(section) do
       -- label_max_length = math.max(#value[2], label_max_length)

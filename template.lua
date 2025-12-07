@@ -1,11 +1,17 @@
 local M = {}
 
-local set_config = ya.sync(function(st, opts) st.opts = opts end)
+local set_config = ya.sync(function(st, opts)
+  st.opts = opts
+end)
 
-local get_config = ya.sync(function(st) return st.opts or {} end)
+local get_config = ya.sync(function(st)
+  return st.opts or {}
+end)
 
 local function tbl_deep_extend(default, config)
-  if type(config) ~= 'table' then return config end
+  if type(config) ~= 'table' then
+    return config
+  end
 
   default = (type(default) == 'table') and default or {}
   for key, _ in pairs(config) do
@@ -16,7 +22,9 @@ local function tbl_deep_extend(default, config)
 end
 
 local function tbl_strict_extend(default, config)
-  if type(default) ~= type(config) then return default end
+  if type(default) ~= type(config) then
+    return default
+  end
   if type(default) ~= 'table' then
     if config ~= nil then
       return config
@@ -32,14 +40,20 @@ local function tbl_strict_extend(default, config)
   return default
 end
 
-function M:setup(config) set_config(tbl_deep_extend(get_config(), config)) end
+function M:setup(config)
+  set_config(tbl_deep_extend(get_config(), config))
+end
 
 function M:peek(job)
   local start, cache = os.clock(), ya.file_cache(job)
-  if not cache then return end
+  if not cache then
+    return
+  end
 
   local ok, err = self:preload(job)
-  if not ok or err then return end
+  if not ok or err then
+    return
+  end
 
   ya.sleep(math.max(0, rt.preview.image_delay / 1000 + start - os.clock()))
 
@@ -51,7 +65,9 @@ function M:seek(job) end
 
 function M:preload(job)
   local cache = ya.file_cache(job)
-  if not cache or fs.cha(cache) then return true end
+  if not cache or fs.cha(cache) then
+    return true
+  end
 
   local output, err = Command(''):arg({
     tostring(job.file.url),
@@ -68,6 +84,8 @@ function M:preload(job)
   return true
 end
 
-function M:spot(job) require('spot'):spot(job, { { title = 'Something' } }) end
+function M:spot(job)
+  require('spot'):spot(job, { { title = 'Something' } })
+end
 
 return M

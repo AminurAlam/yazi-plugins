@@ -9,7 +9,9 @@ return {
     local target_index
     -- local pattern = [[.*(%..*)$]]
     local pattern = [[^.*(%..+)$]]
-    local get_ext = function(name) return string.rep(string.gsub(name, pattern, '%1')) end
+    local get_ext = function(name)
+      return string.rep(string.gsub(name, pattern, '%1'))
+    end
     -- local ext = string.gsub(cur.hovered.name, cur.hovered.url.stem or '', '') ---@type string
     local ext = get_ext(cur.hovered.name) ---@type string
     local fwd = (job.args[1] == 'fwd')

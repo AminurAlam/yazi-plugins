@@ -2,10 +2,14 @@ local M = {}
 
 function M:peek(job)
   local start, cache = os.clock(), ya.file_cache(job)
-  if not cache then return end
+  if not cache then
+    return
+  end
 
   local ok, err = self:preload(job)
-  if not ok or err then return end
+  if not ok or err then
+    return
+  end
 
   ya.sleep(math.max(0, rt.preview.image_delay / 1000 + start - os.clock()))
 
@@ -17,7 +21,9 @@ function M:seek(job) end
 
 function M:preload(job)
   local cache = ya.file_cache(job)
-  if not cache or fs.cha(cache) then return true end
+  if not cache or fs.cha(cache) then
+    return true
+  end
 
   local output, err = Command('gnome-epub-thumbnailer'):arg({
     '-s',

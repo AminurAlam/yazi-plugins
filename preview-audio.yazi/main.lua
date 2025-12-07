@@ -10,7 +10,9 @@ local audio_ffprobe = function(file)
   }
 
   local output, err = cmd:output()
-  if not output then return {}, Err('Failed to start `ffprobe`, error: %s', err) end
+  if not output then
+    return {}, Err('Failed to start `ffprobe`, error: %s', err)
+  end
 
   local json = ya.json_decode(output.stdout)
   if not json then
@@ -39,8 +41,12 @@ local audio_ffprobe = function(file)
     if tags.ORIGINALDATE and tags.ORIGINALDATE ~= '' then
       date = date .. ' / ' .. tags.ORIGINALDATE
     end
-    if (aar ~= '') and (aar ~= ar) then artist = artist .. ' / ' .. aar end
-    if cdata then c = cdata.codec_name .. ' ' .. cdata.width .. 'x' .. cdata.height end
+    if (aar ~= '') and (aar ~= ar) then
+      artist = artist .. ' / ' .. aar
+    end
+    if cdata then
+      c = cdata.codec_name .. ' ' .. cdata.width .. 'x' .. cdata.height
+    end
 
     data = {
       ui.Line(string.format('%s - %s', artist, title)),
@@ -83,10 +89,14 @@ function M:seek(job) end
 
 function M:preload(job)
   local cache = ya.file_cache(job)
-  if not cache then return true end
+  if not cache then
+    return true
+  end
 
   local cha = fs.cha(cache)
-  if cha and cha.len > 0 then return true end
+  if cha and cha.len > 0 then
+    return true
+  end
 
   -- stylua: ignore
   local output, err = Command('ffmpeg')

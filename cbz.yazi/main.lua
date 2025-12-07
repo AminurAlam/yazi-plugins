@@ -7,8 +7,12 @@ local comicinfo = function(file)
   if cout and cout.status.code == 11 then
     cout = Command('unzip'):arg({ '-p', file.name, '1/ComicInfo.xml' }):output()
   end
-  if not cout then return end
-  if cout and cout.status.code == 11 then return end
+  if not cout then
+    return
+  end
+  if cout and cout.status.code == 11 then
+    return
+  end
 
   local text = cout and cout.stdout
 
@@ -34,10 +38,14 @@ end
 
 function M:peek(job)
   local start, cache = os.clock(), ya.file_cache(job)
-  if not cache then return end
+  if not cache then
+    return
+  end
 
   local ok, err = self:preload(job)
-  if not ok or err then return end
+  if not ok or err then
+    return
+  end
 
   ya.sleep(math.max(0, rt.preview.image_delay / 1000 + start - os.clock()))
 
@@ -57,7 +65,9 @@ end
 
 function M:preload(job)
   local cache = ya.file_cache(job)
-  if not cache or fs.cha(cache) then return true end
+  if not cache or fs.cha(cache) then
+    return true
+  end
 
   local output, err = Command('cbzcover')
     :arg({
@@ -81,6 +91,8 @@ function M:preload(job)
   return true
 end
 
-function M:spot(job) return require('spot'):spot(job, { comicinfo(job.file) }) end
+function M:spot(job)
+  return require('spot'):spot(job, { comicinfo(job.file) })
+end
 
 return M
