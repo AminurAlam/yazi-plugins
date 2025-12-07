@@ -17,7 +17,7 @@
 
 ## WIP Plugins (may be broken)
 
-- [gitinfo.yazi](gitinfo.yazi) - Preview git info by hovering over `.git/` directory
+- [preview-git.yazi](preview-git.yazi) - Preview git info by hovering over `.git/` directory
 - [nextension.yazi](nextension.yazi) - Jump to next file with different extension
 - [cbz.yazi](cbz.yazi) - Preview covers of comic books
 - [spot-code.yazi](spot-code.yazi) -
@@ -25,3 +25,4 @@
 - [fselect.yazi](fselect.yazi) -
 - [topaste.yazi](topaste.yazi) -
 - [preview-ebook.yazi](preview-ebook.yazi) -
+- [preview-sqlite.yazi](preview-sqlite.yazi) -
