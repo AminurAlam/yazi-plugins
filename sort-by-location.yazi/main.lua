@@ -30,6 +30,8 @@ local find_match = function(config)
   end
 end
 
+-- TODO: use ind-sort
+-- https://github.com/sxyazi/yazi/pull/3391
 function M:setup(config)
   ps.sub('cd', function()
     local match = find_match(config)

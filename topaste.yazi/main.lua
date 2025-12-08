@@ -1,5 +1,7 @@
 --- @sync entry
 
+-- TODO: move to closest item
+-- TODO: check if theres a bug when on multiple tabs
 return {
   setup = function()
     ps.sub('move', function(body)

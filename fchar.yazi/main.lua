@@ -23,8 +23,15 @@ end)
 local get_config = ya.sync(function(st)
   return st.opts
     or {
+      -- f true: f -> file, File, FILE
       insensitive = true,
-      keep_searching = { enable = false, limit = 10 },
+
+      -- if true: f -> file, .file, @file, #file, ...file
+      skip_symbols = true,
+
+      -- if true: f -> file, alsofile, elf
+      search_entire_string = false,
+
       aliases = {},
     }
 end)
@@ -46,6 +53,7 @@ function M:setup(config)
   set_config(tbl_deep_extend(get_config(), config))
 end
 
+-- TODO: process `--flags`
 function M:entry()
   local cands = {
     { on = '0' },
@@ -114,22 +122,26 @@ function M:entry()
   }
   local opts = get_config()
 
+  if opts.skip_symbols then
+    local additional_keys = '~.!@#-'
+    for i = 1, #additional_keys do
+      cands[#cands + 1] = { on = additional_keys:sub(i, i) }
+    end
+  end
+
   local idx = ya.which { cands = cands, silent = true }
   if not idx then
     return
   end
 
-  local kw = '[' .. cands[idx].on .. (opts.aliases[cands[idx].on] or '') .. ']'
-  local count = 0
-  if changed(kw) then
-    ya.emit('find_do', { [[^\W?]] .. string.rep('.', count) .. kw, insensitive = opts.insensitive })
-    while opts.keep_searching.enable and count < opts.keep_searching.limit and not matched() do
-      count = count + 1
-      ya.emit(
-        'find_do',
-        { [[^\W?]] .. string.rep('.', count) .. kw, insensitive = opts.insensitive }
-      )
-    end
+  local re = (opts.search_entire_string and '' or '^')
+    .. (opts.skip_symbols and [[\W?]] or '')
+    .. '['
+    .. cands[idx].on
+    .. (opts.aliases[cands[idx].on] or '')
+    .. ']'
+  if changed(re) then
+    ya.emit('find_do', { re, insensitive = opts.insensitive })
   else
     ya.emit('find_arrow', {})
   end

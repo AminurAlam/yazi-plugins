@@ -28,8 +28,12 @@ in `~/.config/yazi/init.lua`
 ```lua
 -- default config
 require('fchar'):setup {
+  -- f true: f -> file, File, FILE
   insensitive = true,
-  keep_searching = { enable = false, limit = 10 },
+  -- if true: f -> file, .file, @file, #file, ...file
+  skip_symbols = true,
+  -- if true: f -> file, alsofile, elf
+  search_entire_string = false,
   aliases = {},
 }
 
