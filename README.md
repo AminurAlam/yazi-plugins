@@ -5,6 +5,11 @@
 - [spot.yazi](spot.yazi) - Lets you create spotters easily
 - [spot-audio.yazi](spot-audio.yazi) - Spotter for audio metadata
 - [spot-video.yazi](spot-video.yazi) - Spotter for video metadata
+- [spot-cbz.yazi](spot-cbz.yazi) - Spot comic books that have ComicInfo.xml
+
+```sh
+ya pkg add
+```
 
 ## previewers
 
@@ -22,7 +27,7 @@
 ## WIP Plugins (may be broken)
 
 - [nextension.yazi](nextension.yazi) - Jump to next file with different extension
-- [cbz.yazi](cbz.yazi) - Preview covers of comic books
+- [preview-cbz.yazi](preview-cbz.yazi) - Preview covers of comic books
 - [sort-by-location.yazi](sort-by-location.yazi) - Very simple plugin to set sorting for directories
 - [zsteroid.yazi](zsteroid.yazi) - improved zoxide plugin
 - [spot-directory.yazi](spot-directory.yazi) -

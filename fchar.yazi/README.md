@@ -5,6 +5,7 @@
 - case insensitive matching
 - supports aliases for different languages
 - ignores leading non-alphabet
+- can match characters anywhere in filename
 
 # Installation
 
@@ -28,7 +29,7 @@ in `~/.config/yazi/init.lua`
 ```lua
 -- default config
 require('fchar'):setup {
-  -- f true: f -> file, File, FILE
+  -- if true: f -> file, File, FILE
   insensitive = true,
   -- if true: f -> file, .file, @file, #file, ...file
   skip_symbols = true,
