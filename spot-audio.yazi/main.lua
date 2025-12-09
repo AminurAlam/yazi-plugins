@@ -63,7 +63,7 @@ local audio_ffprobe = function(file)
     title = 'Audio',
     { 'Format', json.format.format_name },
     { 'BitRate', tonumber((json.format.bit_rate or 0) // 1000) .. ' kb/s' },
-    { 'Channels', tostring(json.format.nb_streams) },
+    { 'Channels', tostring(stream.channels or '?') },
   }
 
   ya.dbg(data)

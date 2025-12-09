@@ -60,7 +60,7 @@ local audio_ffprobe = function(file)
   local br = tonumber((json.format.bit_rate or 0) // 1000) .. ' kb/s'
   table.insert(data, ui.Line(string.format('%s: %s', 'Format', json.format.format_name)))
   table.insert(data, ui.Line(string.format('%s: %s', 'BitRate', br)))
-  table.insert(data, ui.Line(string.format('%s: %s', 'Channels', tostring(json.format.nb_streams))))
+  table.insert(data, ui.Line(string.format('%s: %s', 'Channels', tostring(stream.channels or '?'))))
 
   return data
 end
