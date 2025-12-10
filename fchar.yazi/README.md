@@ -1,4 +1,4 @@
-<img width="957" height="487" alt="Screenshot_20251021_225047_grim" src="https://github.com/user-attachments/assets/b734d630-ab08-46a2-a6a0-acaf458d36c0" />
+<img width="957" height="487" alt="list of files with highlighted matching characters" src="https://github.com/user-attachments/assets/b734d630-ab08-46a2-a6a0-acaf458d36c0" />
 
 # Features
 

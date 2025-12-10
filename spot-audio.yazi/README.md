@@ -1,4 +1,4 @@
-<img width="1920" height="1080" alt="Screenshot_20251008_144913_grim" src="https://github.com/user-attachments/assets/2f5b7d9a-50f4-4ce9-a920-b7f7d0156ad4" />
+<img width="1920" height="1080" alt="window showing audio metadata" src="https://github.com/user-attachments/assets/2f5b7d9a-50f4-4ce9-a920-b7f7d0156ad4" />
 
 # Installation
 
