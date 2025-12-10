@@ -44,15 +44,17 @@ function M:peek(job)
     return
   end
 
-  local ok, err = self:preload(job)
+  local ok, err
+
+  ok, err = self:preload(job)
   if not ok or err then
     return
   end
 
   ya.sleep(math.max(0, rt.preview.image_delay / 1000 + start - os.clock()))
 
-  local _, err = ya.image_show(cache, job.area)
-  ya.preview_widget(job, err and ui.Text(err):area(job.area):wrap(ui.Wrap.YES))
+  _, err = ya.image_show(cache, job.area)
+  ya.preview_widget(job, err and ui.Text(err):area(job.area))
 end
 
 function M:seek() end

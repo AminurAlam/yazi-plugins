@@ -6,16 +6,6 @@ local changed = ya.sync(function(st, new)
   return b or not cx.active.finder
 end)
 
-local matched = ya.sync(function()
-  for _, file in ipairs(cx.active.current.files) do
-    local highlights = file:highlights()
-    if highlights and #highlights > 0 then
-      return true
-    end
-  end
-  return false
-end)
-
 local set_config = ya.sync(function(st, opts)
   st.opts = opts
 end)
