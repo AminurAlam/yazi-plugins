@@ -1,5 +1,8 @@
 local M = {}
 
+---@param file File
+---@return boolean
+---@return Sections|Error
 local audio_ffprobe = function(file)
   -- stylua: ignore
   local cmd = Command('ffprobe'):arg {
@@ -11,21 +14,21 @@ local audio_ffprobe = function(file)
 
   local output, err = cmd:output()
   if not output then
-    return audio_mediainfo(file), Err('Failed to start `ffprobe`, error: %s', err)
+    return false, Err('Failed to start `ffprobe`, error: %s', err)
   end
 
   local json = ya.json_decode(output.stdout)
   if not json then
-    return nil, Err('Failed to decode `ffprobe` output: %s', output.stdout)
+    return false, Err('Failed to decode `ffprobe` output: %s', output.stdout)
   elseif type(json) ~= 'table' then
-    return nil, Err('Invalid `ffprobe` output: %s', output.stdout)
+    return false, Err('Invalid `ffprobe` output: %s', output.stdout)
   end
-  ya.dbg(json)
+  -- ya.dbg(json)
 
   local stream = json.streams[1]
   local tags = json.format.tags or stream.tags or stream
 
-  local data = {}
+  local data = {} ---@type Sections
   local title, album, aar, ar =
     tags.TITLE or tags.title or '',
     tags.ALBUM or tags.album or '',
@@ -66,25 +69,28 @@ local audio_ffprobe = function(file)
     { 'Channels', tostring(stream.channels or '?') },
   }
 
-  ya.dbg(data)
-  return data
+  -- ya.dbg(data)
+  return true, data
 end
 
+---@param file File
+---@return boolean
+---@return Sections|Error
 local audio_mediainfo = function(file)
   local cmd = Command('mediainfo'):arg { '--Output=JSON', file.name }
 
   local output, err = cmd:output()
   if not output then
-    return nil, Err('Failed to start `mediainfo`, error: %s', err)
+    return false, Err('Failed to start `mediainfo`, error: %s', err)
   end
 
   local json = ya.json_decode(output.stdout)
   if not json then
-    return nil, Err('Failed to decode `mediainfo` output: %s', output.stdout)
+    return false, Err('Failed to decode `mediainfo` output: %s', output.stdout)
   elseif type(json) ~= 'table' then
-    return nil, Err('Invalid `mediainfo` output: %s', output.stdout)
+    return false, Err('Invalid `mediainfo` output: %s', output.stdout)
   end
-  ya.dbg(json)
+  -- ya.dbg(json)
 
   local data = {}
   local general = json.media.track[1]
@@ -130,13 +136,25 @@ local audio_mediainfo = function(file)
     -- { 'Duration', audio.Duration },
   }
 
-  ya.dbg(data)
+  -- ya.dbg(data)
 
-  return data
+  return true, data
 end
 
+---@param job Job
 function M:spot(job)
-  require('spot'):spot(job, audio_ffprobe(job.file))
+  local ok, info = audio_ffprobe(job.file)
+  if not ok then
+    ya.dbg(info)
+    ok, info = audio_mediainfo(job.file)
+    if not ok then
+      ya.dbg(info)
+    end
+  end
+
+  if ok then
+    require('spot'):spot(job, info)
+  end
 end
 
 return M

@@ -28,8 +28,8 @@ function M:spot(job)
     },
     {
       title = 'BBB',
-      { '1', 'ONE' },
-      { '2', 'TWO' },
+      { '1', ui.Line('ONE'):fg('red') },
+      { '2', ui.Line('TWO'):fg('magenta') },
     },
   })
 end
@@ -51,9 +51,22 @@ in `~/.config/yazi/init.lua`
 
 ```lua
 require('spot'):setup {
-  height = 20,
-  width = 60,
-  render_metadata = true,
-  render_plugins = false,
+    metadata_section = {
+        enable = true,
+        hash_cmd = 'cksum', -- other hashing commands can be slower
+        hash_filesize_limit = 100, -- in MB, set 0 to disable
+    },
+    plugins_section = {
+        enable = true,
+    },
+    style = {
+        section = 'green',
+        key = 'reset',
+        value = 'blue',
+        colorize_metadata = true,
+        height = 20,
+        width = 60,
+        key_length = 15,
+    },
 }
 ```

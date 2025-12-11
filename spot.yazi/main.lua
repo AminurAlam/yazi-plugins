@@ -1,59 +1,152 @@
 local M = {}
 
+---@alias SpotConf_plug { enable: boolean }
+---@alias SpotConf_meta { enable: boolean, hash_cmd: "cksum"|"md5sum"|"sha1sum", hash_filesize_limit: number }
+---@alias SpotConf_style { section: AsColor, key: AsColor, value: AsColor, colorize_metadata: boolean, key_length: number, height: number, width: integer }
+---@alias SpotConf { plugins_section: SpotConf_plug, metadata_section: SpotConf_meta, style: SpotConf_style }
+
+---@alias Section { title: string }|table<number, table<string, Renderable>>
+---@alias Sections table<number, Section>
+
+---@type fun(opts: SpotConf): nil
 local set_config = ya.sync(function(st, opts)
   st.opts = opts
 end)
 
+---@type fun(): SpotConf
 local get_config = ya.sync(function(st)
   return st.opts
     or {
-      height = 20,
-      width = 60,
-      render_metadata = true,
-      render_plugins = false,
+      metadata_section = {
+        enable = true,
+        hash_cmd = 'cksum', -- other hashing commands can be slower
+        hash_filesize_limit = 100, -- in MB, set 0 to disable
+      },
+      plugins_section = {
+        enable = true,
+      },
+      style = {
+        section = 'green',
+        key = 'reset',
+        value = 'blue',
+        colorize_metadata = true,
+        height = 20,
+        width = 60,
+        key_length = 15,
+      },
     }
 end)
 
-local permission = function(file)
+---@param file File
+---@param config SpotConf
+---@return Renderable
+local permission = function(file, config)
   if not file then
-    return ''
+    return ui.Text('no such file exists')
   end
 
   local perm = file.cha:perm()
   if not perm then
-    return ''
+    return ui.Text('couldnt get permissions')
   end
 
-  local spans = ''
+  if not config.style.colorize_metadata then
+    return perm
+  end
+
+  local spans = {}
   for i = 1, #perm do
     local c = perm:sub(i, i)
-    spans = spans .. c
+    local style = th.status.perm_type
+    if c == '-' or c == '?' then
+      style = th.status.perm_sep
+    elseif c == 'r' then
+      style = th.status.perm_read
+    elseif c == 'w' then
+      style = th.status.perm_write
+    elseif c == 'x' or c == 's' or c == 'S' or c == 't' or c == 'T' then
+      style = th.status.perm_exec
+    end
+    spans[i] = ui.Span(c):style(style)
   end
-  return spans
+  return ui.Line(spans)
 end
 
-local hash = function(file)
-  -- TODO: make the size limit configurable
-  if file.cha.len > 100000000 then
-    return ''
-  end -- 100M
-  local cmd = Command('cksum'):arg { '-acrc', file.name }
+---@param file File
+---@param config SpotConf
+---@return Renderable
+local hash = function(file, config)
+  local styles = {
+    [0] = ui.Style():fg('blue'),
+    ui.Style():fg('green'),
+    ui.Style():fg('magenta'),
+    ui.Style():fg('red'),
+    ui.Style():fg('yellow'),
+    ui.Style():fg('blue'),
+    ui.Style():fg('cyan'),
+    ui.Style():fg('magenta'),
+    ui.Style():fg('red'),
+    ui.Style():fg('yellow'),
+  }
+
+  if config.metadata_section.hash_filesize_limit == 0 then
+    return ui.Line('')
+  end
+
+  if file.cha.len > (config.metadata_section.hash_filesize_limit * 1000000) then
+    return ui.Line('')
+  end
+  local cmd = Command(config.metadata_section.hash_cmd):arg { file.name }
 
   local output, err = cmd:output()
   if not output then
-    return '', Err('Failed to start `ffprobe`, error: %s', err)
+    return Err('Failed to compute hash: %s', err)
   end
-  return output.stdout:gsub('^(%d+ %d+).*', '%1')
+
+  -- TODO: fix pattern
+  -- local sum = output.stdout:gsub('^(.*) [^%s]+$', '%1')
+  local sum = output.stdout:gsub('^(%d+ %d+).*', '%1')
+
+  if not config.style.colorize_metadata then
+    return ui.Text(sum)
+  end
+  local spans = {}
+  for i = 1, #sum do
+    local c = sum:sub(i, i)
+    spans[i] = ui.Span(c):style(styles[tonumber(c)] or ui.Style():fg('white'))
+  end
+
+  return ui.Line(spans)
 end
 
+---@param file File
+---@param type "atime"|"btime"|"mtime"
+---@return string
 local fileTimestamp = function(file, type)
-  local file = file
+  local file = file ---@diagnostic disable-line: redefined-local
   if not file or file.cha.is_link then
     return ''
   end
+
   local time = math.floor(file.cha[type] or 0)
+  local delta = os.time() - time
+
   if time == 0 then
     return ''
+  end
+
+  if delta < (3600 * 24 * 7) then
+    local format = ''
+    if delta < 60 then
+      format = delta .. 's ago'
+    elseif delta < 3600 then
+      format = (delta // 60) .. ' m ago'
+    elseif delta < (3600 * 24) then
+      format = (delta // 3600) .. 'h ago'
+    else
+      format = (delta // (3600 * 24)) .. ' days ago'
+    end
+    return format
   end
   return tostring(os.date('%Y-%m-%d %H:%M', time))
 end
@@ -77,44 +170,54 @@ local function tbl_strict_extend(default, config)
   return default
 end
 
+---@param config SpotConf
 function M:setup(config)
   set_config(tbl_strict_extend(get_config(), config))
 end
 
+---@param job Job
+---@param extra table
+---@param config SpotConf
+---@return Renderable
 function M:render_table(job, extra, config)
-  local styles = {
-    header = th.spot.title or ui.Style():fg('green'),
-    row_label = ui.Style():fg('reset'),
-    row_value = th.spot.tbl_col or ui.Style():fg('blue'),
-  }
   local rows = {}
 
   -- TODO: render multiline if '\n' is present
-  ---@param section table
+  ---@param section Section
   local add_section = function(section)
     if #rows ~= 0 then
-      rows[#rows + 1] = ui.Row({})
+      rows[#rows + 1] = ui.Row({}) ---@diagnostic disable-line: undefined-field
     end
-    rows[#rows + 1] = ui.Row({ section.title }):style(styles.header)
-    for _, value in ipairs(section) do
-      -- label_max_length = math.max(#value[2], label_max_length)
-      rows[#rows + 1] = ui.Row({
-        ui.Line('  ' .. value[1]):style(styles.row_label),
-        ui.Text(value[2] or ''):style(styles.row_value),
-      })
+
+    rows[#rows + 1] = ui.Row({ section.title or 'No title' })
+      :style(ui.Style():fg(config.style.section))
+    for _, row in ipairs(section) do
+      -- label_max_length = math.max(#row[2], label_max_length)
+
+      local key = row[1]
+      if type(row[1]) == 'string' then
+        key = ui.Line('  ' .. row[1]):style(ui.Style():fg(config.style.key))
+      end
+
+      local val = row[2]
+      if type(row[2]) == 'string' then
+        val = ui.Line(row[2]):style(ui.Style():fg(config.style.value))
+      end
+
+      rows[#rows + 1] = ui.Row({ key, val })
     end
   end
 
-  if config.render_metadata then
+  -- Metadata
+  if config.metadata_section.enable then
     add_section {
       title = 'Metadata',
       { 'Mimetype', job.mime },
-      { 'Mode', permission(job.file) },
-      -- TODO: relative
+      { 'Mode', permission(job.file, config) },
       { 'Created', fileTimestamp(job.file, 'btime') },
       { 'Modified', fileTimestamp(job.file, 'mtime') },
       { 'Accessed', fileTimestamp(job.file, 'atime') },
-      { 'Hash', hash(job.file) },
+      { 'Hash', hash(job.file, config) },
     }
   end
 
@@ -124,11 +227,11 @@ function M:render_table(job, extra, config)
   end
 
   -- Plugins
-  if config.render_plugins then
-    local spotter = rt.plugin.spotter(job.file.url, job.mime)
-    local previewer = rt.plugin.previewer(job.file.url, job.mime)
-    local fetchers = rt.plugin.fetchers(job.file, job.mime)
-    local preloaders = rt.plugin.preloaders(job.file.url, job.mime)
+  if config.plugins_section.enable then
+    local spotter = rt.plugin.spotter(job.file.url, job.mime) ---@diagnostic disable-line: undefined-field
+    local previewer = rt.plugin.previewer(job.file.url, job.mime) ---@diagnostic disable-line: undefined-field
+    local fetchers = rt.plugin.fetchers(job.file, job.mime) ---@diagnostic disable-line: undefined-field
+    local preloaders = rt.plugin.preloaders(job.file.url, job.mime) ---@diagnostic disable-line: undefined-field
 
     for i, v in ipairs(fetchers) do
       fetchers[i] = v.cmd
@@ -147,22 +250,25 @@ function M:render_table(job, extra, config)
   end
 
   return ui
-    .Table(rows)
-    :area(job.area)
+    .Table(rows) ---@diagnostic disable-line: undefined-field
+    :area(job.area) ---@diagnostic disable-line: undefined-field
     :row(1)
     :col(1)
-    -- :col_style(styles.row_value)
     :widths({
-      ui.Constraint.Length(15),
+      ui.Constraint.Length(config.style.key_length),
       ui.Constraint.Fill(1),
     })
-    :cell_style(th.spot.tbl_cell or ui.Style():fg('blue'):reverse())
+    :cell_style(ui.Style():fg(config.style.value):reverse())
+  -- :col_style(styles.row_value)
 end
 
+---@param job Job
+---@param extra Sections
+---@param config SpotConf
 function M:spot(job, extra, config)
-  local config = tbl_strict_extend(get_config(), config)
-  job.area = ui.Pos({ 'center', w = config.width, h = config.height })
-  ya.spot_table(job, self:render_table(job, extra, config))
+  config = tbl_strict_extend(get_config(), config) ---@type SpotConf
+  job.area = ui.Pos({ 'center', w = config.style.width, h = config.style.height }) ---@diagnostic disable-line: inject-field
+  ya.spot_table(job, self:render_table(job, extra, config)) ---@diagnostic disable-line: undefined-field
 end
 
 return M

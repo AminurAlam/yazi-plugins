@@ -1,5 +1,3 @@
----@diagnostic disable: undefined-field, redefined-local
-
 local M = {}
 
 ---@param job Job

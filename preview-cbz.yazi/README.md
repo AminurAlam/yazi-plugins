@@ -9,8 +9,10 @@ ya pkg add AminurAlam/yazi-plugins:preview-cbz
 
 # Dependencies
 
-- unzip+zipinfo (for .cbz)
+- unzip (for .cbz)
 - unrar (for .cbr)
+- grep
+- sort
 
 # Usage
 

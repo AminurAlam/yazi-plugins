@@ -26,7 +26,6 @@
 - [nextension.yazi](nextension.yazi) - Jump to next file with different extension
 - [sort-by-location.yazi](sort-by-location.yazi) - Very simple plugin to set sorting for directories
 - [zsteroid.yazi](zsteroid.yazi) - improved zoxide plugin
-- [spot-directory.yazi](spot-directory.yazi) -
 - [spot-image.yazi](spot-image.yazi) -
 - [fselect.yazi](fselect.yazi) -
 - [topaste.yazi](topaste.yazi) -
