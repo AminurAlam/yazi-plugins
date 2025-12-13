@@ -1,5 +1,6 @@
 --- @sync entry
 
+-- TODO: goto begining/end when no more extensions are present
 return {
   entry = function(_, job)
     local cur = cx.active.current ---@type tab__Folder

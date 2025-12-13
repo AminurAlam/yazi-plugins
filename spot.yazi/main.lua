@@ -20,7 +20,7 @@ local get_config = ya.sync(function(st)
       metadata_section = {
         enable = true,
         hash_cmd = 'cksum', -- other hashing commands can be slower
-        hash_filesize_limit = 100, -- in MB, set 0 to disable
+        hash_filesize_limit = 150, -- in MB, set 0 to disable
       },
       plugins_section = {
         enable = true,
@@ -103,9 +103,7 @@ local hash = function(file, config)
     return Err('Failed to compute hash: %s', err)
   end
 
-  -- TODO: fix pattern
-  -- local sum = output.stdout:gsub('^(.*) [^%s]+$', '%1')
-  local sum = output.stdout:gsub('^(%d+ %d+).*', '%1')
+  local sum = output.stdout:sub(1, -#file.name - 3)
 
   if not config.style.colorize_metadata then
     return ui.Text(sum)
@@ -244,8 +242,8 @@ function M:render_table(job, extra, config)
       title = 'Plugins',
       { 'Spotter', spotter and spotter.cmd or '-' },
       { 'Previewer', previewer and previewer.cmd or '-' },
-      { 'Fetchers', #fetchers ~= 0 and fetchers or '-' },
-      { 'Preloaders', #preloaders ~= 0 and preloaders or '-' },
+      { 'Fetchers', #fetchers ~= 0 and table.concat(fetchers, ', ') or '-' },
+      { 'Preloaders', #preloaders ~= 0 and table.concat(preloaders, ', ') or '-' },
     }
   end
 

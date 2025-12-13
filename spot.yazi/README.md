@@ -54,7 +54,7 @@ require('spot'):setup {
     metadata_section = {
         enable = true,
         hash_cmd = 'cksum', -- other hashing commands can be slower
-        hash_filesize_limit = 100, -- in MB, set 0 to disable
+        hash_filesize_limit = 150, -- in MB, set 0 to disable
     },
     plugins_section = {
         enable = true,
