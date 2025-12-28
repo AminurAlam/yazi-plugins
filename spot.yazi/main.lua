@@ -1,7 +1,7 @@
 --- @since 25.5.31
 
 ---@alias SpotConf_plug { enable: boolean }
----@alias SpotConf_meta { enable: boolean, hash_cmd: "cksum"|"md5sum"|"sha1sum", hash_filesize_limit: number }
+---@alias SpotConf_meta { enable: boolean, hash_cmd: "cksum"|"md5sum"|"sha1sum", hash_filesize_limit: number, relative_time: boolean, time_format: string }
 ---@alias SpotConf_style { section: AsColor, key: AsColor, value: AsColor, colorize_metadata: boolean, key_length: number, height: number, width: integer }
 ---@alias SpotConf { plugins_section: SpotConf_plug, metadata_section: SpotConf_meta, style: SpotConf_style }
 
@@ -23,6 +23,8 @@ local get_config = ya.sync(function(st)
         enable = true,
         hash_cmd = 'cksum', -- other hashing commands can be slower
         hash_filesize_limit = 150, -- in MB, set 0 to disable
+        relative_time = true,
+        time_format = '%Y-%m-%d %H:%M', -- https://www.man7.org/linux/man-pages/man3/strftime.3.html
       },
       plugins_section = {
         enable = true,
@@ -121,8 +123,9 @@ end
 
 ---@param file File
 ---@param type "atime"|"btime"|"mtime"
+---@param config SpotConf
 ---@return string
-local fileTimestamp = function(file, type)
+local fileTimestamp = function(file, type, config)
   local file = file ---@diagnostic disable-line: redefined-local
   if not file or file.cha.is_link then
     return ''
@@ -135,20 +138,20 @@ local fileTimestamp = function(file, type)
     return ''
   end
 
-  if delta < (3600 * 24 * 7) then
-    local format = ''
+  if delta < (3600 * 24 * 7) and config.metadata_section.relative_time then
+    local relative_format = ''
     if delta < 60 then
-      format = delta .. 's ago'
+      relative_format = delta .. 's ago'
     elseif delta < 3600 then
-      format = (delta // 60) .. ' m ago'
+      relative_format = (delta // 60) .. ' m ago'
     elseif delta < (3600 * 24) then
-      format = (delta // 3600) .. 'h ago'
+      relative_format = (delta // 3600) .. 'h ago'
     else
-      format = (delta // (3600 * 24)) .. ' days ago'
+      relative_format = (delta // (3600 * 24)) .. ' days ago'
     end
-    return format
+    return relative_format
   end
-  return tostring(os.date('%Y-%m-%d %H:%M', time))
+  return tostring(os.date(config.metadata_section.time_format, time))
 end
 
 local function tbl_strict_extend(default, config)
@@ -214,9 +217,9 @@ function M:render_table(job, extra, config)
       title = 'Metadata',
       { 'Mimetype', job.mime },
       { 'Mode', permission(job.file, config) },
-      { 'Created', fileTimestamp(job.file, 'btime') },
-      { 'Modified', fileTimestamp(job.file, 'mtime') },
-      { 'Accessed', fileTimestamp(job.file, 'atime') },
+      { 'Created', fileTimestamp(job.file, 'btime', config) },
+      { 'Modified', fileTimestamp(job.file, 'mtime', config) },
+      { 'Accessed', fileTimestamp(job.file, 'atime', config) },
       { 'Hash', hash(job.file, config) },
     }
   end

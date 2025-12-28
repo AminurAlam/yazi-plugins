@@ -31,6 +31,8 @@ function M:spot(job)
       { '1', ui.Line('ONE'):fg('red') },
       { '2', ui.Line('TWO'):fg('magenta') },
     },
+  }, {
+    -- you can pass config table here just like in :setup({...})
   })
 end
 
@@ -42,8 +44,8 @@ in `~/.config/yazi/yazi.toml`
 ```toml
 [plugin]
 prepend_spotters = [
-  { name = "audio/*", run = "spot" }, # use the plugin with default settings
-  { name = "video/*", run = "spot-custom" }, # use your custom spotter
+  { mime = "audio/*", run = "spot" }, # use the plugin with default settings
+  { mime = "video/*", run = "spot-custom" }, # use your custom spotter that you created above
 ]
 ```
 
@@ -51,22 +53,24 @@ in `~/.config/yazi/init.lua`
 
 ```lua
 require('spot'):setup {
-    metadata_section = {
-        enable = true,
-        hash_cmd = 'cksum', -- other hashing commands can be slower
-        hash_filesize_limit = 150, -- in MB, set 0 to disable
-    },
-    plugins_section = {
-        enable = true,
-    },
-    style = {
-        section = 'green',
-        key = 'reset',
-        value = 'blue',
-        colorize_metadata = true,
-        height = 20,
-        width = 60,
-        key_length = 15,
-    },
+  metadata_section = {
+    enable = true,
+    hash_cmd = 'cksum', -- other hashing commands can be slower
+    hash_filesize_limit = 150, -- in MB, set 0 to disable
+    relative_time = true,
+    time_format = '%Y-%m-%d %H:%M', -- https://www.man7.org/linux/man-pages/man3/strftime.3.html
+  },
+  plugins_section = {
+    enable = true,
+  },
+  style = {
+    section = 'green',
+    key = 'reset',
+    value = 'blue',
+    colorize_metadata = true,
+    height = 20,
+    width = 60,
+    key_length = 15,
+  },
 }
 ```
