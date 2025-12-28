@@ -1,3 +1,5 @@
+--- @since 25.5.31
+
 local M = {}
 
 local changed = ya.sync(function(st, new)

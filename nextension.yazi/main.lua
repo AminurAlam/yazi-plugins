@@ -1,3 +1,5 @@
+--- @since 25.5.31
+
 --- @sync entry
 
 -- TODO: goto begining/end when no more extensions are present

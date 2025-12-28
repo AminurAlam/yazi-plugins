@@ -57,6 +57,7 @@ function M:peek(job)
   ya.preview_widget(job, err and ui.Text(err):area(job.area))
 end
 
+-- TODO: change text on seek
 function M:seek() end
 
 function M:preload(job)

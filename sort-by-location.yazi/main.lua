@@ -1,3 +1,5 @@
+--- @since 25.5.31
+
 local M = {}
 
 local set_pref = ya.sync(function(st)
@@ -31,6 +33,7 @@ local find_match = function(config)
 end
 
 -- TODO: use ind-sort
+-- TODO: fix opening new tab with different sorting fucks up previous tab
 -- https://github.com/sxyazi/yazi/pull/3391
 function M:setup(config)
   ps.sub('cd', function()

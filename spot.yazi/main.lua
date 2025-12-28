@@ -1,4 +1,4 @@
-local M = {}
+--- @since 25.5.31
 
 ---@alias SpotConf_plug { enable: boolean }
 ---@alias SpotConf_meta { enable: boolean, hash_cmd: "cksum"|"md5sum"|"sha1sum", hash_filesize_limit: number }
@@ -7,6 +7,8 @@ local M = {}
 
 ---@alias Section { title: string }|table<number, table<string, Renderable>>
 ---@alias Sections table<number, Section>
+
+local M = {}
 
 ---@type fun(opts: SpotConf): nil
 local set_config = ya.sync(function(st, opts)

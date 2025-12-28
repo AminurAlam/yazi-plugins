@@ -1,4 +1,5 @@
 --- @sync entry
+--- @since 25.5.31
 
 -- TODO: move to closest item
 -- TODO: check if theres a bug when on multiple tabs
