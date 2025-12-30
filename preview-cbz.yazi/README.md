@@ -20,10 +20,10 @@ in `~/.config/yazi/yazi.toml`
 
 ```toml
 plugin.prepend_previewers = [
-  { name = '*.cb{z,r}', run = 'preview-cbz' },
+  { url = '*.cb{z,r}', run = 'preview-cbz' },
 ]
 
 plugin.prepend_preloaders = [
-  { name = '*.cb{z,r}', run = 'preview-cbz' },
+  { url = '*.cb{z,r}', run = 'preview-cbz' },
 ]
 ```

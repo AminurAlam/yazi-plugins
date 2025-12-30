@@ -18,6 +18,6 @@ in `~/.config/yazi/yazi.toml`
 
 ```toml
 plugin.prepend_previewers = [
-  { name = '**/.git/', run = 'preview-git' },
+  { url = '**/.git/', run = 'preview-git' },
 ]
 ```

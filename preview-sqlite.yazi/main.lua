@@ -1,4 +1,4 @@
---- @since 25.5.31
+--- @since 25.12.29
 
 local M = {}
 
@@ -9,7 +9,7 @@ function M:peek(job)
   }):output()
 
   if output.status.success and output.stdout then
-    ya.preview_widgets(job, { ui.Text(output.stdout):area(job.area) })
+    ya.preview_widget(job, { ui.Text(output.stdout):area(job.area) })
   end
 end
 

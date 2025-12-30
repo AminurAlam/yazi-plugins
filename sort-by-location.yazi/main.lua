@@ -1,10 +1,10 @@
---- @since 25.5.31
+--- @since 25.12.29
 
 local M = {}
 
 local set_pref = ya.sync(function(st)
   st.sort = {
-    cx.active.pref.sort_by,
+    by = cx.active.pref.sort_by,
     reverse = cx.active.pref.sort_reverse,
     dir_first = cx.active.pref.sort_dir_first,
     translit = cx.active.pref.sort_translit,
@@ -15,7 +15,7 @@ end)
 local get_pref = ya.sync(function(st)
   return st.sort
     or {
-      cx.active.pref.sort_by,
+      by = cx.active.pref.sort_by,
       reverse = cx.active.pref.sort_reverse,
       dir_first = cx.active.pref.sort_dir_first,
       translit = cx.active.pref.sort_translit,
@@ -32,17 +32,16 @@ local find_match = function(config)
   end
 end
 
--- TODO: use ind-sort
 -- TODO: fix opening new tab with different sorting fucks up previous tab
--- https://github.com/sxyazi/yazi/pull/3391
+-- TODO: fix starting at a config directory fucks up other directories
 function M:setup(config)
-  ps.sub('cd', function()
+  ps.sub('ind-sort', function()
     local match = find_match(config)
     if match then
       set_pref()
-      ya.emit('sort', config[match].sort)
+      return config[match].sort
     else
-      ya.emit('sort', get_pref())
+      return get_pref()
     end
   end)
 end

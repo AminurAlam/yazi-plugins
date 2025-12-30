@@ -18,6 +18,6 @@ in `~/.config/yazi/yazi.toml`
 ```toml
 [plugin]
 prepend_spotters = [
-  { name = "video/*", run = "spot-video" }
+  { url = "video/*", run = "spot-video" }
 ]
 ```

@@ -1,4 +1,4 @@
---- @since 25.5.31
+--- @since 25.12.29
 
 ---@alias SpotConf_plug { enable: boolean }
 ---@alias SpotConf_meta { enable: boolean, hash_cmd: "cksum"|"md5sum"|"sha1sum", hash_filesize_limit: number, relative_time: boolean, time_format: string }
@@ -231,10 +231,10 @@ function M:render_table(job, extra, config)
 
   -- Plugins
   if config.plugins_section.enable then
-    local spotter = rt.plugin.spotter(job.file.url, job.mime) ---@diagnostic disable-line: undefined-field
-    local previewer = rt.plugin.previewer(job.file.url, job.mime) ---@diagnostic disable-line: undefined-field
+    local spotter = rt.plugin.spotter(job.file, job.mime) ---@diagnostic disable-line: undefined-field
+    local previewer = rt.plugin.previewer(job.file, job.mime) ---@diagnostic disable-line: undefined-field
     local fetchers = rt.plugin.fetchers(job.file, job.mime) ---@diagnostic disable-line: undefined-field
-    local preloaders = rt.plugin.preloaders(job.file.url, job.mime) ---@diagnostic disable-line: undefined-field
+    local preloaders = rt.plugin.preloaders(job.file, job.mime) ---@diagnostic disable-line: undefined-field
 
     for i, v in ipairs(fetchers) do
       fetchers[i] = v.cmd

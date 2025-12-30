@@ -39,12 +39,12 @@ in `~/.config/yazi/yazi.toml`
 plugin.prepend_previewers = [
   { mime = 'font/*', run = 'font-sample' },
   { mime = 'application/ms-opentype', run = 'font-sample' },
-  { name = '*.{otf,ttf,woff,woff2}', run = 'font-sample' },
+  { url = '*.{otf,ttf,woff,woff2}', run = 'font-sample' },
 ]
 plugin.prepend_preloaders = [
   { mime = 'font/*', run = 'font-sample' },
   { mime = 'application/ms-opentype', run = 'font-sample' },
-  { name = '*.{otf,ttf,woff,woff2}', run = 'font-sample' },
+  { url = '*.{otf,ttf,woff,woff2}', run = 'font-sample' },
 ]
 ```
 

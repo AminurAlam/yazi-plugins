@@ -20,6 +20,6 @@ in `~/.config/yazi/yazi.toml`
 [plugin]
 prepend_spotters = [
   { mime = 'audio/mpegurl', run = 'code' }, # ignore .m3u files
-  { name = "audio/*", run = "spot-audio" },
+  { url = "audio/*", run = "spot-audio" },
 ]
 ```

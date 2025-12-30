@@ -16,6 +16,6 @@ in `~/.config/yazi/yazi.toml`
 
 ```toml
 plugin.prepend_spotters = [
-  { name = '*.cb{z,r}', run = 'spot-cbz' },
+  { url = '*.cb{z,r}', run = 'spot-cbz' },
 ]
 ```

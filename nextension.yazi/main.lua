@@ -1,8 +1,9 @@
---- @since 25.5.31
+--- @since 25.12.29
 
 --- @sync entry
 
 -- TODO: goto begining/end when no more extensions are present
+-- TODO: treat all directories as an extension
 return {
   entry = function(_, job)
     local cur = cx.active.current ---@type tab__Folder
@@ -30,7 +31,7 @@ return {
     end
 
     if target_index then
-      ya.manager_emit('arrow', { target_index - current_index })
+      ya.emit('arrow', { target_index - current_index })
       -- ya.dbg(target_index, current_index, target_index - current_index)
     end
   end,
