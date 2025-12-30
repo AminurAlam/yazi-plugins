@@ -1,4 +1,4 @@
---- @since 25.5.31
+--- @since 25.12.29
 
 local M = {}
 
@@ -77,7 +77,7 @@ function M:peek(job)
     img_area, err = ya.image_show(cache, job.area)
   end
 
-  ya.preview_widgets(job, {
+  ya.preview_widget(job, {
     ui.Text(audio_ffprobe(job.file)):area(ui.Rect {
       x = job.area.x,
       y = job.area.y + (img_area and img_area.h or 0),
