@@ -33,8 +33,12 @@ require('fchar'):setup {
   insensitive = true,
   -- if true: f -> file, .file, @file, #file, ...file
   skip_symbols = true,
-  -- if true: f -> file, alsofile, elf
-  search_entire_string = false,
+  -- if {"yazi-"}: f -> file, yazi-file
+  skip_prefix = {},
+  -- start: f -> file
+  -- word:  f -> file, also-file
+  -- all:   f -> file, also-file, alsofile, elf
+  search_location = 'start',
   aliases = {},
 }
 
@@ -74,4 +78,20 @@ require('fchar'):setup {
     z = 'ざずぜぞザズゼゾ',
   },
 }
+
+-- you may want to turn off the search regex from
+-- showing up in the header by doing this
+function Header:flags()
+  local cwd = self._current.cwd
+  local filter = self._current.files.filter
+
+  local t = {}
+  if cwd.is_search then
+    t[#t + 1] = string.format('search: %s', cwd.domain)
+  end
+  if filter then
+    t[#t + 1] = string.format('filter: %s', filter)
+  end
+  return #t == 0 and '' or ' (' .. table.concat(t, ', ') .. ')'
+end
 ```

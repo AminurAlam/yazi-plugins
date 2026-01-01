@@ -1,13 +1,5 @@
 --- @since 25.12.29
 
----@alias SpotConf_plug { enable: boolean }
----@alias SpotConf_meta { enable: boolean, hash_cmd: "cksum"|"md5sum"|"sha1sum", hash_filesize_limit: number, relative_time: boolean, time_format: string }
----@alias SpotConf_style { section: AsColor, key: AsColor, value: AsColor, colorize_metadata: boolean, key_length: number, height: number, width: integer }
----@alias SpotConf { plugins_section: SpotConf_plug, metadata_section: SpotConf_meta, style: SpotConf_style }
-
----@alias Section { title: string }|table<number, table<string, Renderable>>
----@alias Sections table<number, Section>
-
 local M = {}
 
 ---@type fun(opts: SpotConf): nil

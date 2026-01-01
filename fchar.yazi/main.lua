@@ -8,22 +8,25 @@ local changed = ya.sync(function(st, new)
   return b or not cx.active.finder
 end)
 
+---@type fun(opts: FCharConf): nil
 local set_config = ya.sync(function(st, opts)
   st.opts = opts
 end)
 
+---@type fun(): FCharConf
 local get_config = ya.sync(function(st)
   return st.opts
     or {
-      -- f true: f -> file, File, FILE
+      -- if true: f -> file, File, FILE
       insensitive = true,
-
       -- if true: f -> file, .file, @file, #file, ...file
       skip_symbols = true,
-
-      -- if true: f -> file, alsofile, elf
-      search_entire_string = false,
-
+      -- if {"yazi-"}: f -> file, yazi-file
+      skip_prefix = {},
+      -- start: f -> file
+      -- word:  f -> file, also-file
+      -- all:   f -> file, also-file, twofile, elf
+      search_location = 'start',
       aliases = {},
     }
 end)
@@ -41,6 +44,7 @@ local function tbl_deep_extend(default, config)
   return default
 end
 
+---@type fun(self, config: FCharConf): nil
 function M:setup(config)
   set_config(tbl_deep_extend(get_config(), config))
 end
@@ -126,8 +130,21 @@ function M:entry()
     return
   end
 
-  local re = (opts.search_entire_string and '' or '^')
-    .. (opts.skip_symbols and [[\W?]] or '')
+  local loc = {
+    start = '^',
+    word = '(^|\\W)',
+    all = '',
+  }
+
+  -- TODO: autodetect common prefix
+  local prefixes = ''
+  for _, prefix in ipairs(opts.skip_prefix) do
+    prefixes = prefixes .. '(' .. prefix .. ')?'
+  end
+
+  local re = loc[opts.search_location]
+    .. ((opts.search_location == 'start' and opts.skip_symbols) and [[\W?]] or '')
+    .. prefixes
     .. '['
     .. cands[idx].on
     .. (opts.aliases[cands[idx].on] or '')
