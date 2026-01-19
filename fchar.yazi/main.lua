@@ -27,6 +27,7 @@ local get_config = ya.sync(function(st)
       -- word:  f -> file, also-file
       -- all:   f -> file, also-file, twofile, elf
       search_location = 'start',
+      fallback = true,
       aliases = {},
     }
 end)
@@ -149,6 +150,8 @@ function M:entry()
     .. cands[idx].on
     .. (opts.aliases[cands[idx].on] or '')
     .. ']'
+
+  -- TODO: fallback to word/all if no match was found
   if changed(re) then
     ya.emit('find_do', { re, insensitive = opts.insensitive })
   else

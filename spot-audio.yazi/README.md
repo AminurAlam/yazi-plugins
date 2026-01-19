@@ -8,7 +8,7 @@ ya pkg add AminurAlam/yazi-plugins:spot AminurAlam/yazi-plugins:spot-audio
 
 # Dependencies
 
-- [spot.yazi](/spot.yazi)
+- [spot.yazi](/spot.yazi) (backend plugin)
 - `ffprobe` (part of ffmpeg)
 - `mediainfo` (used as fallback)
 
@@ -23,3 +23,5 @@ prepend_spotters = [
   { url = "audio/*", run = "spot-audio" },
 ]
 ```
+
+for customizing the spotter see [spot.yazi](/spot.yazi) documentation

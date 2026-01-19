@@ -3,11 +3,12 @@
 # Installation
 
 ```sh
-ya pkg add AminurAlam/yazi-plugins:spot-cbz
+ya pkg add AminurAlam/yazi-plugins:spot AminurAlam/yazi-plugins:spot-cbz
 ```
 
 # Dependencies
 
+- [spot.yazi](/spot.yazi) (backend plugin)
 - unzip
 
 # Usage
@@ -19,3 +20,5 @@ plugin.prepend_spotters = [
   { url = '*.cb{z,r}', run = 'spot-cbz' },
 ]
 ```
+
+for customizing the spotter see [spot.yazi](/spot.yazi) documentation

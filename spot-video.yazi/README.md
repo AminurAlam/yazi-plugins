@@ -8,7 +8,7 @@ ya pkg add AminurAlam/yazi-plugins:spot AminurAlam/yazi-plugins:spot-video
 
 # Dependencies
 
-- [spot.yazi](/spot.yazi)
+- [spot.yazi](/spot.yazi) (backend)
 - `ffprobe` (part of ffmpeg)
 
 # Usage
@@ -21,3 +21,5 @@ prepend_spotters = [
   { url = "video/*", run = "spot-video" }
 ]
 ```
+
+for customizing the spotter see [spot.yazi](/spot.yazi) documentation
