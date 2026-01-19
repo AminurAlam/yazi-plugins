@@ -46,6 +46,7 @@ in `~/.config/yazi/yazi.toml`
 prepend_spotters = [
   { mime = "audio/*", run = "spot" }, # use the plugin with default settings
   { mime = "video/*", run = "spot-custom" }, # use your custom spotter that you created above
+  { mime = "*", run = "spot" }, # to fallback all the files without a spot-custom, but it maintains the style 
 ]
 ```
 
@@ -59,6 +60,7 @@ require('spot'):setup {
     hash_filesize_limit = 150, -- in MB, set 0 to disable
     relative_time = true,
     time_format = '%Y-%m-%d %H:%M', -- https://www.man7.org/linux/man-pages/man3/strftime.3.html
+    with_header = true,
   },
   plugins_section = {
     enable = true,
