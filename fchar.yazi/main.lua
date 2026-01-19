@@ -50,8 +50,8 @@ function M:setup(config)
   set_config(tbl_deep_extend(get_config(), config))
 end
 
--- TODO: process `--flags`
-function M:entry()
+---@param job Job
+function M:entry(job)
   local cands = {
     { on = '0' },
     { on = '1' },
@@ -117,6 +117,9 @@ function M:entry()
     { on = 'Y' },
     { on = 'Z' },
   }
+  if job.args[1] then
+    set_config(tbl_deep_extend(get_config(), { search_location = job.args[1] }))
+  end
   local opts = get_config()
 
   if opts.skip_symbols then

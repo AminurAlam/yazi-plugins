@@ -2,6 +2,7 @@
 
 local M = {}
 
+-- TODO: implement cache
 local audio_ffprobe = function(file)
   -- stylua: ignore
   local cmd = Command('ffprobe'):arg {

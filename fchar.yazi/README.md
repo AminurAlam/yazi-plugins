@@ -18,9 +18,12 @@ ya pkg add AminurAlam/yazi-plugins:fchar
 in `~/.config/yazi/keymap.toml`
 
 ```toml
+# fchar [start|word|all]
 [mgr]
 prepend_keymap = [
-  { on = "f", run = "plugin fchar", desc = "Jump to char" },
+  { on = "f",     run = "plugin fchar start", desc = "Jump to first char in filename" },
+  { on = "F",     run = "plugin fchar word",  desc = "Jump to first char in a word" },
+  { on = "<C-f>", run = "plugin fchar all",   desc = "Jump to char anywhere in filename" },
 ]
 ```
 
