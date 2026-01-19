@@ -4,7 +4,9 @@
 
 -- TODO: goto begining/end when no more extensions are present
 -- TODO: treat all directories as an extension
+
 return {
+  ---@param job Job
   entry = function(_, job)
     local cur = cx.active.current ---@type tab__Folder
     local files = cur.files ---@type fs__Files
