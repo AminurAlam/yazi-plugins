@@ -17,6 +17,7 @@ local get_config = ya.sync(function(st)
         hash_filesize_limit = 150, -- in MB, set 0 to disable
         relative_time = true,
         time_format = '%Y-%m-%d %H:%M', -- https://www.man7.org/linux/man-pages/man3/strftime.3.html
+        with_header = true,
       },
       plugins_section = {
         enable = true,
@@ -170,6 +171,36 @@ function M:setup(config)
   set_config(tbl_strict_extend(get_config(), config))
 end
 
+local function get_total_size(urls)
+    local total = 0
+    for _, url in ipairs(urls) do
+        local it = fs.calc_size(url)
+        while true do
+            local next = it:recv()
+            if next then
+                total = total + next
+            else
+                break
+            end
+        end
+    end
+    return total
+end
+
+local function format_size(size)
+    local units = { "B", "KB", "MB", "GB", "TB" }
+    local unit_index = 1
+    while size > 1024 and unit_index < #units do
+        size = size / 1024
+        unit_index = unit_index + 1
+    end
+
+    local str = string.format("%.2f", size)
+    str = string.gsub(str, "(%d),?0*$", "%1")
+    return str .. ' ' .. units[unit_index]
+end
+
+
 ---@param job Job
 ---@param extra table
 ---@param config SpotConf
@@ -203,6 +234,16 @@ function M:render_table(job, extra, config)
     end
   end
 
+  -- Archive
+  if config.metadata_section.with_header then
+    add_section{
+      title = job.file.cha.is_dir and 'Folder' or 'File',
+      {'Size', format_size(get_total_size({job.file.url}))},
+      {'Path', tostring(job.file.path)}
+    }
+  end
+
+  local hashzin = not job.file.cha.is_dir and { 'Hash', hash(job.file, config) } or nil
   -- Metadata
   if config.metadata_section.enable then
     add_section {
@@ -212,7 +253,7 @@ function M:render_table(job, extra, config)
       { 'Created', fileTimestamp(job.file, 'btime', config) },
       { 'Modified', fileTimestamp(job.file, 'mtime', config) },
       { 'Accessed', fileTimestamp(job.file, 'atime', config) },
-      { 'Hash', hash(job.file, config) },
+      hashzin,
     }
   end
 

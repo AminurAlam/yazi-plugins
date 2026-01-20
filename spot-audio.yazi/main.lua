@@ -27,6 +27,13 @@ local audio_ffprobe = function(file)
 
   local stream = json.streams[1]
   local tags = json.format.tags or stream.tags or stream
+  local duration = json.format.duration
+  if duration then
+      duration = tonumber(duration)
+      local minutes = math.floor(duration / 60)
+      local seconds = math.floor(duration % 60)
+      duration = string.format("%d:%02d", minutes, seconds)
+  end
 
   local data = {} ---@type Sections
   local title, album, aar, ar =
@@ -37,7 +44,7 @@ local audio_ffprobe = function(file)
 
   if title .. album .. ar .. aar ~= '' then
     local cdata = json.streams[2]
-    local date = tags.DATE or tags.date or ''
+    local date = tags.DATE or tags.date or 'No date'
     local c = ''
     local artist = ar
 
@@ -53,11 +60,12 @@ local audio_ffprobe = function(file)
 
     data[#data + 1] = {
       title = 'General',
-      { 'Title', title },
+      { 'Title', ui.Line(title):bold()},
       { 'Album', album },
       { 'Artist', artist },
-      { 'Genre', tags.GENRE or tags.genre },
-      { 'Date', date },
+      { 'Genre', tags.GENRE or tags.genre or "No genre"},
+      { 'Date', date},
+      { 'Duration', duration },
       c ~= '' and { 'Cover art', c } or nil,
     }
   end
@@ -121,6 +129,7 @@ local audio_mediainfo = function(file)
       { 'Artist', ar .. (aar ~= ar and (' / ' .. aar) or '') },
       { 'Genre', general.Genre },
       { 'Date', date },
+      { 'Duration', general.Duration },
       csize ~= '' and { 'Cover art', csize } or nil,
     }
   end
@@ -133,7 +142,7 @@ local audio_mediainfo = function(file)
     { 'Quality', (audio.BitDepth or '1') .. '/' .. sr },
     { 'BitRate', br },
     { 'Channels', audio.Channels .. ' ' .. (audio.ChannelLayout or '') },
-    -- { 'Duration', audio.Duration },
+    { 'Duration', audio.Duration },
   }
 
   -- ya.dbg(data)
