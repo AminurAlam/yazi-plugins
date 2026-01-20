@@ -29,10 +29,8 @@ local audio_ffprobe = function(file)
   local tags = json.format.tags or stream.tags or stream
   local duration = json.format.duration
   if duration then
-      duration = tonumber(duration)
-      local minutes = math.floor(duration / 60)
-      local seconds = math.floor(duration % 60)
-      duration = string.format("%d:%02d", minutes, seconds)
+    duration = tonumber(duration)
+    duration = string.format('%d:%02d', math.floor(duration / 60), math.floor(duration % 60))
   end
 
   local data = {} ---@type Sections
@@ -60,11 +58,11 @@ local audio_ffprobe = function(file)
 
     data[#data + 1] = {
       title = 'General',
-      { 'Title', ui.Line(title):bold()},
+      { 'Title', title },
       { 'Album', album },
       { 'Artist', artist },
-      { 'Genre', tags.GENRE or tags.genre or "No genre"},
-      { 'Date', date},
+      { 'Genre', tags.GENRE or tags.genre or 'No genre' },
+      { 'Date', date },
       { 'Duration', duration },
       c ~= '' and { 'Cover art', c } or nil,
     }

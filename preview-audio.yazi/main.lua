@@ -28,10 +28,8 @@ local audio_ffprobe = function(file)
   local tags = json.format.tags or stream.tags or stream
   local duration = json.format.duration
   if duration then
-      duration = tonumber(duration)
-      local minutes = math.floor(duration / 60)
-      local seconds = math.floor(duration % 60)
-      duration = string.format("%d:%02d", minutes, seconds)
+    duration = tonumber(duration)
+    duration = string.format('%d:%02d', math.floor(duration / 60), math.floor(duration % 60))
   end
 
   local data = {}
@@ -58,18 +56,18 @@ local audio_ffprobe = function(file)
     end
 
     data = {
-      ui.Line(string.format('%s - %s', artist, title)):fg("#FF4C4C"):bold(),
+      ui.Line(string.format('%s - %s', artist, title)),
       ui.Line(string.format('%s: %s', 'Duration', duration)),
       ui.Line(string.format('%s: %s', 'Album', album)),
-      ui.Line(string.format('%s: %s', 'Genre', tags.GENRE or tags.genre or "No genre")),
+      ui.Line(string.format('%s: %s', 'Genre', tags.GENRE or tags.genre or 'No genre')),
       ui.Line(string.format('%s: %s', 'Date', date)),
       c ~= '' and ui.Line(string.format('%s: %s', 'Cover art', c)) or nil,
     }
   end
 
   local br = tonumber((json.format.bit_rate or 0) // 1000) .. ' kb/s'
-  table.insert(data, ui.Line(""))
-  table.insert(data, ui.Line("Specs:"):fg("#858585"))
+  table.insert(data, ui.Line(''))
+  table.insert(data, ui.Line('# Specs'))
   table.insert(data, ui.Line(string.format('%s: %s', 'Format', json.format.format_name)))
   table.insert(data, ui.Line(string.format('%s: %s', 'BitRate', br)))
   table.insert(data, ui.Line(string.format('%s: %s', 'Channels', tostring(stream.channels or '?'))))
