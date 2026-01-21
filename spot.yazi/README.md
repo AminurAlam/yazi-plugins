@@ -1,4 +1,10 @@
-<img width="1920" height="1080" alt="window with basic metadata" src="https://github.com/user-attachments/assets/d21595a6-d2ed-4133-b31a-14cf004c1631" />
+<img width="1920" height="1080" alt="window with basic metadata" src="https://github.com/user-attachments/assets/4cd526bb-11fe-4aa5-9d2c-27328fab37c9" />
+
+spot.yazi + [spot-video.yazi](../spot-video.yazi)
+<img width="1920" height="1080" alt="another window showing multiple streams" src="https://github.com/user-attachments/assets/933b124d-4f1f-44f2-b1d8-128a3fcbdf5d" />
+
+spot.yazi + [spot-audio.yazi](../spot-audio.yazi)
+<img width="1920" height="1080" alt="window showing audio metadata" src="https://github.com/user-attachments/assets/d6eef132-bbba-4eb3-bb29-0527a38699d8" />
 
 # Installation
 
@@ -11,6 +17,8 @@ ya pkg add AminurAlam/yazi-plugins:spot
 - `cksum` (part of GNU coreutils) (optional)
 
 # Usage
+
+<!-- TODO: move custom stuff to template -->
 
 this plugin can be used as a spotter for basic metadata or used to build your own custom spotter
 

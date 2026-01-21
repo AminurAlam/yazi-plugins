@@ -1,4 +1,6 @@
-<img width="1920" height="1080" alt="window showing multiple video streams" src="https://github.com/user-attachments/assets/6d7dc8f8-f53c-4ce3-94e7-ff5e77dcef48" />
+<img width="1920" height="1080" alt="window showing multiple video and audiostreams" src="https://github.com/user-attachments/assets/6d7dc8f8-f53c-4ce3-94e7-ff5e77dcef48" />
+
+<img width="1920" height="1080" alt="another window showing multiple streams" src="https://github.com/user-attachments/assets/933b124d-4f1f-44f2-b1d8-128a3fcbdf5d" />
 
 # Installation
 
