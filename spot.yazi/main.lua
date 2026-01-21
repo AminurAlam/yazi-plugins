@@ -245,7 +245,7 @@ function M:render_table(job, extra, config)
     add_section {
       title = 'Metadata',
       { 'Mimetype', job.mime },
-      { 'Size', format_size(get_total_size({ job.file.url })) },
+      { 'Size', format_size(get_total_size({ job.file.url })) }, -- TODO: update modeline with size
       { 'Mode', permission(job.file, config) },
       { 'Created', fileTimestamp(job.file, 'btime', config) },
       { 'Modified', fileTimestamp(job.file, 'mtime', config) },

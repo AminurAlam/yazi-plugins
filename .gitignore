@@ -2,11 +2,14 @@
 /README_.md
 /test/*
 
-ffmpeg-stats.yazi
-git.yazi
-hover-after-moved.yazi
-piper.yazi
-pref-by-location.yazi
-smart-enter.yazi
-toggle-pane.yazi
-types.yazi
+/preview-template.yazi
+/spot-template.yazi
+
+/ffmpeg-stats.yazi
+/git.yazi
+/hover-after-moved.yazi
+/piper.yazi
+/pref-by-location.yazi
+/smart-enter.yazi
+/toggle-pane.yazi
+/types.yazi
