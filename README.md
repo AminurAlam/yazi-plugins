@@ -14,6 +14,7 @@
 - [preview-cbz.yazi](preview-cbz.yazi) - Preview covers of comic books
 - [preview-git.yazi](preview-git.yazi) - Preview git info by hovering over `.git/` directory
 - [preview-sqlite.yazi](preview-sqlite.yazi) - Preview schema of a sqlite database
+- [preview-typst.yazi](preview-typst.yazi) - Preview schema of a sqlite database
 
 ## functional
 

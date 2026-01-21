@@ -1,6 +1,8 @@
-.luarc.json
-README_.md
+/.luarc.json
+/README_.md
+/test/*
 
+ffmpeg-stats.yazi
 git.yazi
 hover-after-moved.yazi
 piper.yazi
