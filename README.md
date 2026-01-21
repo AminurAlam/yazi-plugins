@@ -30,4 +30,4 @@
 - [spot-image.yazi](spot-image.yazi) -
 - [fselect.yazi](fselect.yazi) -
 - [topaste.yazi](topaste.yazi) -
-- [preview-ebook.yazi](preview-ebook.yazi) -
+- [preview-epub.yazi](preview-epub.yazi) -
