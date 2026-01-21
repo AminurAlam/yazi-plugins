@@ -8,8 +8,8 @@ ya pkg add AminurAlam/yazi-plugins:spot AminurAlam/yazi-plugins:spot-cbz
 
 # Dependencies
 
-- [spot.yazi](/spot.yazi) (backend plugin)
-- unzip
+- [spot.yazi](/spot.yazi) - backend plugin
+- [unzip](https://repology.org/project/unzip/versions) - extracting ComicInfo.xml file
 
 # Usage
 

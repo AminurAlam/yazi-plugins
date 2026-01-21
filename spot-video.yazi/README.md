@@ -1,4 +1,4 @@
-<img width="1920" height="1080" alt="window showing multiple video and audiostreams" src="https://github.com/user-attachments/assets/6d7dc8f8-f53c-4ce3-94e7-ff5e77dcef48" />
+<img width="1920" height="1080" alt="window showing multiple video and audiostreams" src="https://github.com/user-attachments/assets/0a6a9844-d606-416e-9167-540e04c2c4ec" />
 
 <img width="1920" height="1080" alt="another window showing multiple streams" src="https://github.com/user-attachments/assets/933b124d-4f1f-44f2-b1d8-128a3fcbdf5d" />
 
@@ -10,8 +10,8 @@ ya pkg add AminurAlam/yazi-plugins:spot AminurAlam/yazi-plugins:spot-video
 
 # Dependencies
 
-- [spot.yazi](/spot.yazi) (backend)
-- `ffprobe` (part of ffmpeg)
+- [spot.yazi](/spot.yazi) - backend plugin
+- [ffmpeg](https://repology.org/project/ffmpeg/versions) - for extracting metadata
 
 # Usage
 

@@ -8,9 +8,9 @@ ya pkg add AminurAlam/yazi-plugins:spot AminurAlam/yazi-plugins:spot-audio
 
 # Dependencies
 
-- [spot.yazi](/spot.yazi) (backend plugin)
-- `ffprobe` (part of ffmpeg)
-- `mediainfo` (used as fallback)
+- [spot.yazi](/spot.yazi) - backend plugin
+- [ffmpeg](https://repology.org/project/ffmpeg/versions) - for extracting metadata
+- [mediainfo](https://repology.org/project/mediainfo/versions) - used as fallback when ffmpeg is not available
 
 # Usage
 

@@ -10,7 +10,7 @@ ya pkg add AminurAlam/yazi-plugins:preview-sqlite
 
 # Dependencies
 
-- sqlite3
+- [sqlite3](https://repology.org/project/sqlite/versions) - for generating schemas
 
 # Usage
 

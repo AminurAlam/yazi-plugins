@@ -29,7 +29,7 @@ ya pkg add AminurAlam/yazi-plugins:font-sample
 
 # Dependencies
 
-- imagemagick
+- [imagemagick](https://repology.org/project/imagemagick/versions)
 
 # Usage
 
