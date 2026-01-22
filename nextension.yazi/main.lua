@@ -4,6 +4,8 @@
 
 -- TODO: goto begining/end when no more extensions are present
 -- TODO: treat all directories as an extension
+-- TODO: jump to file with matching stem with `*`
+-- TODO: select all files with same extension
 
 return {
   ---@param job Job

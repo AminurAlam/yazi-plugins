@@ -1,6 +1,9 @@
 local M = {}
 
 -- TODO: colorized outpt
+-- TODO: show all remotes
+-- TODO: show all stash
+-- TODO: show all branches
 function M:peek(job)
   local ori = Command('git'):arg({ 'remote', 'get-url', 'origin' }):output()
   local ups = Command('git'):arg({ 'remote', 'get-url', 'upstream' }):output()

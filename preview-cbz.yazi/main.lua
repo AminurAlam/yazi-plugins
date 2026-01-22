@@ -1,9 +1,7 @@
--- TODO: fix loobback
 local M = {}
 
 ---@param job Job
----@return false|number
----@return Error|string
+---@return (Error|string)?
 local get_file = function(job)
   local child, stdout, err
 
@@ -20,16 +18,16 @@ local get_file = function(job)
       :stderr(Command.PIPED)
       :spawn()
   else
-    return false, Err('Filename does not match cbz/zip/cbr/rar')
+    return Err('Filename does not match cbz/zip/cbr/rar')
   end
 
   if not child or err then
-    return false, Err('zipinfo/unrar: %s', err)
+    return Err('zipinfo/unrar: %s', err)
   end
 
   stdout = child:take_stdout()
   if not stdout then
-    return false, Err('No output from zipinfo/unrar')
+    return Err('No output from zipinfo/unrar')
   end
 
   child, err = Command('grep')
@@ -40,12 +38,12 @@ local get_file = function(job)
     :spawn()
 
   if not child or err then
-    return false, Err('grep: %s', err)
+    return Err('grep: %s', err)
   end
 
   stdout = child:take_stdout()
   if not stdout then
-    return false, Err('No output from grep')
+    return Err('No output from grep')
   end
 
   -- stylua: ignore
@@ -57,23 +55,23 @@ local get_file = function(job)
     :spawn()
 
   if not child or err then
-    return false, Err('sort: %s', err)
+    return Err('sort: %s', err)
   end
 
-  local i, file, event = 0, '', 0
+  local i, event = 0, 0
+  local file
   while i <= job.skip do
     file, event = child:read_line()
 
     if i == job.skip then
       child:start_kill()
-      return job.skip, file
+      return file
     elseif event == 2 then
       child:start_kill()
-      return false, Err('hit end')
+      return
     end
     i = i + 1
   end
-  return false, Err('output finished without reaching job.skip')
 end
 
 function M:peek(job)
@@ -82,35 +80,34 @@ function M:peek(job)
     return
   end
 
-  local err_or_bound = self:preload(job)
-  if type(err_or_bound) == 'Error' then
-    return ya.preview_widget(job, ui.Text(tostring(err_or_bound)):area(job.area))
-  elseif type(err_or_bound) == 'number' then
-    ya.dbg(err_or_bound)
-    ya.emit('peek', { tonumber(err_or_bound) - 2, only_if = job.file.url, upper_bound = true })
-    return false
+  local err, bound = self:preload(job)
+
+  if bound and bound > 0 then
+    ya.emit('peek', { bound - 1, only_if = job.file.url, upper_bound = true })
+    return
+  elseif err then
+    ya.preview_widget(job, err)
+    return
   end
 
   ya.sleep(math.max(0, rt.preview.image_delay / 1000 + start - os.clock()))
 
+  ---@diagnostic disable-next-line: redefined-local
   local _, err = ya.image_show(cache, job.area)
-  if err then
-    ya.preview_widget(job, ui.Text(tostring(err)):area(job.area))
-  end
+  ya.preview_widget(job, err)
 end
 
 function M:seek(job)
   local h = cx.active.current.hovered
   if h and h.url == job.file.url then
-    ya.emit('peek', {
-      math.max(0, cx.active.preview.skip + ya.clamp(-1, job.units, 1)),
-      only_if = job.file.url,
-    })
+    local step = ya.clamp(-1, job.units, 1)
+    ya.emit('peek', { math.max(0, cx.active.preview.skip + step), only_if = job.file.url })
   end
 end
 
 ---@param job Job
----@return number|Error?
+---@return Error?
+---@return integer?
 function M:preload(job)
   local cache = ya.file_cache(job)
   if not cache or fs.cha(cache) then
@@ -124,13 +121,19 @@ function M:preload(job)
       and true
     or false
 
-  local found, file_or_err = get_file(job)
+  local efb = get_file(job)
+  ya.dbg('ebf', efb)
 
-  if found and not file_or_err then
-    return found
-  elseif found and file_or_err and type(file_or_err) ~= 'Error' then
-    local file = tostring(file_or_err)
-    ya.dbg(file)
+  if not efb then
+    ya.dbg('  end?', efb)
+    return Err('reached end of archive'), job.skip
+  elseif type(efb) == 'Error' then
+    ya.dbg('  err', efb)
+    return efb
+  elseif type(efb) == 'string' then
+    -- elseif found and file_or_err and type(file_or_err) ~= 'Error' then
+    local file = tostring(efb)
+    ya.dbg('  string', file)
     local output, err, write
     if cbz then
       output, err = Command('unzip')
@@ -159,8 +162,6 @@ function M:preload(job)
     end
 
     return
-  elseif type(file_or_err) == 'Error' then
-    return Err('error when running get_file(): %s', file_or_err)
   end
 end
 
