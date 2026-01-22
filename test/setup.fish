@@ -12,7 +12,7 @@ function dbg
     cat ~/.local/state/yazi/yazi.log \
         | sed -E /emulator/d \
         | sed -E '/emulator.rs/d' \
-        | sed -E 's/^\s+[0-9-]+T[0-9:\.]+Z (DEBUG|ERROR) yazi_plugin::(.*):\s+/\1 \2 /' \
-        | sed -E '/at yazi-plugin/d' \
+        | sed -E 's/^.*[0-9-]+T[0-9:\.]+Z\S* //' \
+        | sed -E '/\S*at\S* yazi-(plugin|dds)/d' \
         | sed -E '/^\s*$/d'
 end
