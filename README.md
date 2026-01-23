@@ -28,6 +28,9 @@
 
 - [sort-by-location.yazi](sort-by-location.yazi) - Very simple plugin to set sorting for directories
 - [zsteroid.yazi](zsteroid.yazi) - improved zoxide plugin
-- [spot-image.yazi](spot-image.yazi) -
 - [fselect.yazi](fselect.yazi) -
+- [preview-template.yazi](preview-template.yazi) -
+- [preview-tree-sitter.yazi](preview-tree-sitter.yazi) -
+- [spot-image.yazi](spot-image.yazi) -
+- [spot-template.yazi](spot-template.yazi) -
 - [topaste.yazi](topaste.yazi) -

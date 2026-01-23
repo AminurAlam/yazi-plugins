@@ -18,35 +18,6 @@ ya pkg add AminurAlam/yazi-plugins:spot
 
 # Usage
 
-<!-- TODO: move custom stuff to template -->
-
-this plugin can be used as a spotter for basic metadata or used to build your own custom spotter
-
-in `~/.config/yazi/plugins/spot-custom.yazi/main.lua`
-
-```lua
-local M = {}
-
-function M:spot(job)
-  require('spot'):spot(job, {
-    {
-      title = 'AAA',
-      { '1', 'ONE' },
-      { '2', 'TWO' },
-    },
-    {
-      title = 'BBB',
-      { '1', ui.Line('ONE'):fg('red') },
-      { '2', ui.Line('TWO'):fg('magenta') },
-    },
-  }, {
-    -- you can pass config table here just like in :setup({...})
-  })
-end
-
-return M
-```
-
 in `~/.config/yazi/yazi.toml`
 
 ```toml
@@ -54,12 +25,10 @@ in `~/.config/yazi/yazi.toml`
 prepend_spotters = [
   # use the plugin for a specific mime type
   { mime = "audio/*", run = "spot" },
-  # use your custom spotter that you wrote in `yazi/plugins/spot-custom.yazi/main.lua`
-  { mime = "video/*", run = "spot-custom" },
   # use as a spotter for all directories
-  { mime = "*/", run = "spot" },
+  { url = "*/", run = "spot" },
   # use as a fallback for all files that don't have a spotter
-  { mime = "*", run = "spot" },
+  { url = "*", run = "spot" },
 ]
 ```
 
@@ -88,3 +57,15 @@ require('spot'):setup {
   },
 }
 ```
+
+# Footnote
+
+see [spot-template.yazi](/spot-template.yazi) to make your own spotter
+
+list of plugins using spot.yazi as a base
+
+- [spot-audio.yazi](/spot-audio.yazi)
+- [spot-video.yazi](/spot-video.yazi)
+- [spot-cbz.yazi](/spot-cbz.yazi)
+
+if you are building something on top of spot.yazi feel free to add it here
