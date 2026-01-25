@@ -5,7 +5,7 @@
 # Installation
 
 ```sh
-ya pkg add AminurAlam/yazi-plugins:spot-template
+ya pkg add AminurAlam/yazi-plugins:spot AminurAlam/yazi-plugins:spot-template
 cp ~/.config/yazi/plugins/spot-template.yazi ~/.config/yazi/plugins/spot-{your-plugin-name}.yazi
 ```
 

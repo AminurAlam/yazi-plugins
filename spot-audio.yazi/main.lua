@@ -25,8 +25,8 @@ local audio_ffprobe = function(file)
   end
   -- ya.dbg(json)
 
-  local stream = json.streams[1]
-  local tags = json.format.tags or stream.tags or stream
+  local audio_stream = json.streams[1]
+  local tags = json.format.tags or audio_stream.tags or audio_stream
   local duration = json.format.duration
   if duration then
     duration = tonumber(duration)
@@ -41,7 +41,7 @@ local audio_ffprobe = function(file)
     tags.ARTIST or tags.artist or ''
 
   if title .. album .. ar .. aar ~= '' then
-    local cdata = json.streams[2]
+    local img_stream = json.streams[2]
     local date = tags.DATE or tags.date or 'No date'
     local c = ''
     local artist = ar
@@ -52,8 +52,8 @@ local audio_ffprobe = function(file)
     if (aar ~= '') and (aar ~= ar) then
       artist = artist .. ' / ' .. aar
     end
-    if cdata then
-      c = cdata.codec_name .. ' ' .. cdata.width .. 'x' .. cdata.height
+    if img_stream then
+      c = img_stream.codec_name .. ' ' .. img_stream.width .. 'x' .. img_stream.height
     end
 
     data[#data + 1] = {
@@ -68,11 +68,20 @@ local audio_ffprobe = function(file)
     }
   end
 
+  local sr = audio_stream.sample_rate
+  if sr then
+    sr = string.format('%.1fkhz', sr / 1000)
+  end
+  local bd = audio_stream.bits_per_raw_sample or '1'
   data[#data + 1] = {
     title = 'Audio',
     { 'Format', json.format.format_name },
-    { 'BitRate', tonumber((json.format.bit_rate or 0) // 1000) .. ' kb/s' },
-    { 'Channels', tostring(stream.channels or '?') },
+    { 'Quality', bd .. 'bit / ' .. sr },
+    {
+      'BitRate',
+      tonumber((audio_stream.bit_rate or json.format.bit_rate or 0) // 1000) .. ' kb/s',
+    },
+    { 'Channels', tostring(audio_stream.channels or '?') },
   }
 
   -- ya.dbg(data)
