@@ -2,9 +2,11 @@
 
 ## spotters
 
-- [spot.yazi](spot.yazi) - lets you create spotters easily
+- [spot.yazi](spot.yazi) - framework to build your own spotter
+- [spot-template.yazi](spot-template.yazi) - example plugin using spot.yazi
 - [spot-audio.yazi](spot-audio.yazi) - audio metadata
 - [spot-video.yazi](spot-video.yazi) - video metadata
+- [spot-image.yazi](spot-image.yazi) - image metadata and exif
 - [spot-cbz.yazi](spot-cbz.yazi) - comic books that have ComicInfo.xml
 
 ## previewers
@@ -16,6 +18,7 @@
 - [preview-git.yazi](preview-git.yazi) - showing git info by hovering over `.git/` directory
 - [preview-sqlite.yazi](preview-sqlite.yazi) - schema of a sqlite database
 - [preview-typst.yazi](preview-typst.yazi) - shows .typ files after rendering
+- [preview-template.yazi](preview-template.yazi) - example plugin for reuse
 
 ## functional
 
@@ -28,9 +31,6 @@
 
 - [sort-by-location.yazi](sort-by-location.yazi) - Very simple plugin to set sorting for directories
 - [zsteroid.yazi](zsteroid.yazi) - improved zoxide plugin
-- [fselect.yazi](fselect.yazi) -
-- [preview-template.yazi](preview-template.yazi) -
 - [preview-tree-sitter.yazi](preview-tree-sitter.yazi) -
-- [spot-image.yazi](spot-image.yazi) -
-- [spot-template.yazi](spot-template.yazi) -
+- [fselect.yazi](fselect.yazi) -
 - [topaste.yazi](topaste.yazi) -
