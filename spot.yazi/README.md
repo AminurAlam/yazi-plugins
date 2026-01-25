@@ -38,7 +38,7 @@ in `~/.config/yazi/init.lua`
 require('spot'):setup {
   metadata_section = {
     enable = true,
-    hash_cmd = 'cksum', -- other hashing commands can be slower
+    hash_cmd = 'xxhsum', -- other hashing commands may be slower
     hash_filesize_limit = 150, -- in MB, set 0 to disable
     relative_time = true,
     time_format = '%Y-%m-%d %H:%M', -- https://www.man7.org/linux/man-pages/man3/strftime.3.html
