@@ -48,7 +48,7 @@ local get_file = function(job)
 
   -- stylua: ignore
   child, err = Command('sort')
-    :arg({ '-n' })
+    :arg({ '-V', '-f' })
     :stdin(stdout)
     :stdout(Command.PIPED)
     :stderr(Command.PIPED)
