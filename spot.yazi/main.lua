@@ -85,18 +85,11 @@ local hash = function(file, config)
     ui.Style():fg('yellow'),
   }
 
-  if config.metadata_section.hash_filesize_limit == 0 then
-    return ui.Line('')
-  end
-
-  if file.cha.len > (config.metadata_section.hash_filesize_limit * 1000000) then
-    return ui.Line('')
-  end
   local cmd = Command(config.metadata_section.hash_cmd):arg { file.name }
 
   local output, err = cmd:output()
   if not output then
-    return Err('Failed to compute hash: %s', err)
+    return Err('Error: %s', err)
   end
 
   local sum = output.stdout:sub(1, -#file.name - 3)
@@ -236,7 +229,11 @@ function M:render_table(job, extra, config)
     end
   end
 
-  local hashzin = (config.metadata_section.hash_filesize_limit > 0 and not job.file.cha.is_dir)
+  local hashrow = (
+    config.metadata_section.hash_filesize_limit > 0
+    and not job.file.cha.is_dir
+    and not (job.file.cha.len > (config.metadata_section.hash_filesize_limit * 1000000))
+  )
       and { 'Hash', hash(job.file, config) }
     or nil
 
@@ -250,7 +247,7 @@ function M:render_table(job, extra, config)
       { 'Created', fileTimestamp(job.file, 'btime', config) },
       { 'Modified', fileTimestamp(job.file, 'mtime', config) },
       { 'Accessed', fileTimestamp(job.file, 'atime', config) },
-      hashzin,
+      hashrow,
     }
   end
 
