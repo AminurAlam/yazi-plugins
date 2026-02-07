@@ -15,8 +15,9 @@ local get_config = ya.sync(function(st)
         enable = true,
         hash_cmd = 'xxhsum', -- other hashing commands may be slower
         hash_filesize_limit = 150, -- in MB, set 0 to disable
-        relative_time = true,
+        relative_time = true, -- 2026-01-01 or n days ago
         time_format = '%Y-%m-%d %H:%M', -- https://www.man7.org/linux/man-pages/man3/strftime.3.html
+        show_compression = 'size', ---@type false|"size"|"percentage"
       },
       plugins_section = {
         enable = true,
@@ -170,7 +171,7 @@ local get_total_size = function(urls)
   for _, url in ipairs(urls) do
     local it = fs.calc_size(url)
     while true do
-      local next = it:recv()
+      local next = it:recv() ---@diagnostic disable-line: undefined-field
       if next then
         total = total + next
       else
@@ -237,12 +238,29 @@ function M:render_table(job, extra, config)
       and { 'Hash', hash(job.file, config) }
     or nil
 
+  local size = format_size(get_total_size({ job.file.url })) ---@diagnostic disable-line: missing-fields
+
+  if config.metadata_section.show_compression and job.mime == 'application/zip' then
+    local comp_size = '??'
+    local output, err = Command('zipinfo'):arg({ '-t', tostring(job.file.url) }):output()
+
+    if not output or err then
+      return Err('Error: %s', err)
+    elseif config.metadata_section.show_compression == 'percentage' then
+      comp_size = string.gsub(output.stdout, '.* (%d+%.%d+%%)', '%1')
+    elseif config.metadata_section.show_compression == 'size' then
+      comp_size =
+        format_size(tonumber(string.gsub(output.stdout, '.* (%d+) bytes uncompressed.*', '%1'), 10))
+    end
+    size = size .. ' (' .. comp_size .. ')'
+  end
+
   -- Metadata
   if config.metadata_section.enable then
     add_section {
       title = 'Metadata',
       { 'Mimetype', job.mime },
-      { 'Size', format_size(get_total_size({ job.file.url })) }, -- TODO: update modeline with size
+      { 'Size', size }, -- TODO: update modeline with size
       { 'Mode', permission(job.file, config) },
       { 'Created', fileTimestamp(job.file, 'btime', config) },
       { 'Modified', fileTimestamp(job.file, 'mtime', config) },
@@ -297,7 +315,7 @@ end
 ---@param config SpotConf
 function M:spot(job, extra, config)
   config = tbl_strict_extend(get_config(), config) ---@type SpotConf
-  job.area = ui.Pos({ 'center', w = config.style.width, h = config.style.height }) ---@diagnostic disable-line: inject-field
+  job.area = ui.Pos({ 'center', w = config.style.width, h = config.style.height }) ---@diagnostic disable-line: assign-type-mismatch
   ya.spot_table(job, self:render_table(job, extra, config)) ---@diagnostic disable-line: undefined-field
 end
 
