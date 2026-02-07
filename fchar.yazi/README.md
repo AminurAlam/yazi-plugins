@@ -45,7 +45,7 @@ require('fchar'):setup {
   skip_prefix = {},
   -- default search location
   -- start: f -> file
-  -- ext:   f -> name.ext
+  -- ext:   f -> name.fs
   -- word:  f -> file, also-file
   -- all:   f -> file, also-file, twofile, elf
   search_location = 'start', ---@type "start"|"ext"|"word"|"all"
