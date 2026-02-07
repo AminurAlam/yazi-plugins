@@ -23,7 +23,9 @@ local get_config = ya.sync(function(st)
       skip_symbols = true,
       -- if {"yazi-"}: f -> file, yazi-file
       skip_prefix = {},
+      -- default search location
       -- start: f -> file
+      -- ext:   f -> name.ext
       -- word:  f -> file, also-file
       -- all:   f -> file, also-file, twofile, elf
       search_location = 'start',
@@ -136,6 +138,7 @@ function M:entry(job)
 
   local loc = {
     start = '^',
+    ext = '\\.',
     word = '(^|\\W)',
     all = '',
   }

@@ -32,7 +32,7 @@ File = File
 ---@class th
 
 -- fchar.yazi
----@alias FCharConf { insensitive: boolean, skip_symbols: boolean, skip_prefix: string[], search_location: "start"|"word"|"all", aliases: table<string, string> }
+---@alias FCharConf { insensitive: boolean, skip_symbols: boolean, skip_prefix: string[], search_location: "start"|"ext"|"word"|"all", aliases: table<string, string> }
 
 -- spot.yazi
 ---@alias SpotConf_plug { enable: boolean }

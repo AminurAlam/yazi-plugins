@@ -18,10 +18,15 @@ ya pkg add AminurAlam/yazi-plugins:fchar
 in `~/.config/yazi/keymap.toml`
 
 ```toml
-# fchar [start|word|all]
+# fchar [start|ext|word|all]
+#   start: f -> file
+#   ext:   f -> name.ext
+#   word:  f -> file, also-file
+#   all:   f -> file, also-file, twofile, elf
 [mgr]
 prepend_keymap = [
   { on = "f",     run = "plugin fchar start", desc = "Jump to first char in filename" },
+  { on = "e",     run = "plugin fchar ext",   desc = "Jump to first char in extension" },
   { on = "F",     run = "plugin fchar word",  desc = "Jump to first char in a word" },
   { on = "<C-f>", run = "plugin fchar all",   desc = "Jump to char anywhere in filename" },
 ]
@@ -38,10 +43,12 @@ require('fchar'):setup {
   skip_symbols = true,
   -- if {"yazi-"}: f -> file, yazi-file
   skip_prefix = {},
+  -- default search location
   -- start: f -> file
+  -- ext:   f -> name.ext
   -- word:  f -> file, also-file
-  -- all:   f -> file, also-file, alsofile, elf
-  search_location = 'start',
+  -- all:   f -> file, also-file, twofile, elf
+  search_location = 'start', ---@type "start"|"ext"|"word"|"all"
   aliases = {},
 }
 
@@ -82,7 +89,7 @@ require('fchar'):setup {
   },
 }
 
--- aliases for chinese, from https://github.com/DreamMaoMao/sjch.yazi
+-- aliases for Chinese, taken from https://github.com/DreamMaoMao/sjch.yazi
 require('fchar'):setup {
   aliases = {
     a = "暗暧謸硙碍磑澳癌凹阿翱聱肮礙骜骯揞敖昂鏊鏖案桉菴獒瑷胺螯铵锕锿庵廒闇罯砹熬爱犴鼇黯鹌鶕鵪鴱鰲鮟驁隘隩霭靄靉鞍懊艾捱傲騃嗄嗌嗳嗷坳埃埯吖呵哀哎唉啊谙鳌鑀安矮皑盎盦盫韽俺奥媪嫒袄襖挨按拗蔼薆岙岸遨氨",
@@ -111,8 +118,8 @@ require('fchar'):setup {
   },
 }
 
--- you may want to turn off the search regex from
--- showing up in the header by doing this
+--[[ you may want to turn off the search regex from showing up
+    in the header by putting this in `~/.config/yazi/init.lua` ]]
 function Header:flags()
   local cwd = self._current.cwd
   local filter = self._current.files.filter
