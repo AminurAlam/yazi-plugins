@@ -26,6 +26,7 @@ local get_config = ya.sync(function(st)
         section = 'green',
         key = 'reset',
         value = 'blue',
+        selected = 'green',
         colorize_metadata = true,
         height = 20,
         width = 60,
@@ -306,7 +307,7 @@ function M:render_table(job, extra, config)
       ui.Constraint.Length(config.style.key_length),
       ui.Constraint.Fill(1),
     })
-    :cell_style(ui.Style():fg(config.style.value):reverse())
+    :cell_style(ui.Style():fg(config.style.selected):reverse())
   -- :col_style(styles.row_value)
 end
 

@@ -37,7 +37,7 @@ File = File
 -- spot.yazi
 ---@alias SpotConf_plug { enable: boolean }
 ---@alias SpotConf_meta { enable: boolean, hash_cmd: "xxhsum"|"cksum"|"md5sum"|"sha1sum", hash_filesize_limit: number, relative_time: boolean, time_format: string, show_compression: false|"size"|"percentage" }
----@alias SpotConf_style { section: AsColor, key: AsColor, value: AsColor, colorize_metadata: boolean, key_length: number, height: number, width: integer }
+---@alias SpotConf_style { section: AsColor, key: AsColor, value: AsColor, selected: AsColor, colorize_metadata: boolean, key_length: number, height: number, width: integer }
 ---@alias SpotConf { plugins_section: SpotConf_plug, metadata_section: SpotConf_meta, style: SpotConf_style }
 
 ---@alias Section { title: string }|table<number, table<string, Renderable>>
