@@ -2,7 +2,6 @@
 
 --- @sync entry
 
--- TODO: goto begining/end when no more extensions are present
 -- TODO: treat all directories as an extension
 -- TODO: jump to file with matching stem with `*`
 -- TODO: select all files with same extension
@@ -37,6 +36,12 @@ return {
     if target_index then
       ya.emit('arrow', { target_index - current_index })
       -- ya.dbg(target_index, current_index, target_index - current_index)
+    else
+      if fwd then
+        ya.emit('arrow', { 'bot' })
+      else
+        ya.emit('arrow', { 'top' })
+      end
     end
   end,
 }
