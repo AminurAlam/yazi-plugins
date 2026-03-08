@@ -1,5 +1,7 @@
 local M = {}
 
+-- TODO: turn the fish script into lua script
+
 ---@param job Job
 function M:peek(job)
   local output, err = Command('torrent-list'):arg({ tostring(job.file.url) }):output()

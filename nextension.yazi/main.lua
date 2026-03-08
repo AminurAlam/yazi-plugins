@@ -8,27 +8,23 @@
 return {
   ---@param job Job
   entry = function(_, job)
-    local cur = cx.active.current ---@type tab__Folder
-    local files = cur.files ---@type fs__Files
-
-    local current_index = cur.cursor ---@type number
-    local target_index
-    -- local pattern = [[.*(%..*)$]]
-    local pattern = [[^.*(%..+)$]]
-    local get_ext = function(file)
+    local get_ext = function(file) ---@param file fs__File
       if file.cha.is_dir then
         return '%dir%'
       else
-        return string.rep(string.gsub(file.name, pattern, '%1'))
+        return string.rep(string.gsub(file.name, [[^.*(%..+)$]], '%1'))
       end
     end
-    -- local ext = string.gsub(cur.hovered.name, cur.hovered.url.stem or '', '') ---@type string
+    local cur = cx.active.current ---@type tab__Folder
+    local files = cur.files ---@type fs__Files
+    local current_index = cur.cursor ---@type number
+    local target_index
     local ext = get_ext(cur.hovered) ---@type string
     local fwd = (job.args[1] == 'fwd')
     local finish = fwd and #files or 1
 
     for i = current_index + 1, finish, fwd and 1 or -1 do
-      local ext2 = get_ext(files[i])
+      local ext2 = get_ext(files[i]) ---@type string
       if ext ~= ext2 then
         ya.dbg(ext, ext2, i)
         target_index = i - 1
@@ -38,7 +34,6 @@ return {
 
     if target_index then
       ya.emit('arrow', { target_index - current_index })
-      -- ya.dbg(target_index, current_index, target_index - current_index)
     else
       if fwd then
         ya.emit('arrow', { 'bot' })
