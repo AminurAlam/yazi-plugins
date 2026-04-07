@@ -5,6 +5,7 @@ local M = {}
 ---@param job Job
 ---@return Sections
 local image_info = function(job)
+  -- TODO: replace with exiv2
   local output, err = Command('magick'):arg({ tostring(job.file.url), 'json:' }):output()
 
   if not output or err then

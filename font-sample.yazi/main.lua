@@ -73,7 +73,7 @@ function M:preload(job)
     '-gravity',
     'center',
     '-font',
-    tostring(job.file.url),
+    tostring(job.file.path):gsub('\\', '\\\\'),
     '-pointsize',
     opts.font_size,
     'xc:' .. opts.bg,

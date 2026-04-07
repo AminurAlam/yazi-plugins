@@ -171,7 +171,7 @@ local get_total_size = function(urls)
   local total = 0
   for _, url in ipairs(urls) do
     local it = fs.calc_size(url)
-    while true do
+    while it do
       local next = it:recv() ---@diagnostic disable-line: undefined-field
       if next then
         total = total + next
