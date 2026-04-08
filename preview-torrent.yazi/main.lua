@@ -1,20 +1,50 @@
 local M = {}
 
--- TODO: turn the fish script into lua script
+-- TODO: scroll text
+-- TODO: pretty print text
 
 ---@param job Job
 function M:peek(job)
-  local output, err = Command('torrent-list'):arg({ tostring(job.file.url) }):output()
+  local output, err = Command('aria2c'):arg({ '-S', tostring(job.file.url) }):output()
 
-  if not output or err then
-    ya.preview_widget(job, Err(err))
+  local out
+  if not output then
+    out = Err('Failed to start `sqlite`: %s', err)
   elseif not output.status.success then
-    ya.preview_widget(job, { ui.Text(output.stderr):area(job.area) })
+    out = Err('stderr: %s', output.stderr)
   else
-    ya.preview_widget(job, { ui.Text(output.stdout):area(job.area) })
+    out = {}
+    local skip = job.skip
+    for i in string.gmatch(output.stdout, '[^\n]+') do
+      if skip < 1 then
+        out[#out + 1] = i
+      else
+        skip = skip - 1
+      end
+      if #out > job.area.h then
+        break
+      end
+    end
+    if #out < job.area.h then
+      ya.emit('peek', { job.skip - 1, only_if = job.file.url, upper_bound = true })
+    end
   end
+  ya.preview_widget(job, ui.List(out):area(job.area))
 end
 
-function M:seek() end
+function M:seek(job)
+  local h = cx.active.current.hovered
+  if not h or h.url ~= job.file.url then
+    return
+  end
+
+  local step = math.floor(job.units * job.area.h / 25)
+  step = step == 0 and ya.clamp(-1, job.units, 1) or step
+
+  ya.emit('peek', {
+    math.max(0, cx.active.preview.skip + step),
+    only_if = job.file.url,
+  })
+end
 
 return M

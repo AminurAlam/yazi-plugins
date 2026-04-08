@@ -17,6 +17,7 @@
 - [preview-epub.yazi](preview-epub.yazi) - cover of `.epub` files
 - [preview-git.yazi](preview-git.yazi) - showing git info by hovering over `.git/` directory
 - [preview-sqlite.yazi](preview-sqlite.yazi) - schema of a sqlite database
+- [preview-torrent.yazi](preview-torrent.yazi) - basic info like name, size, files etc
 - [preview-typst.yazi](preview-typst.yazi) - shows `.typ` files after rendering
 - [preview-template.yazi](preview-template.yazi) - example plugin for reuse
 
@@ -32,6 +33,5 @@
 - [sort-by-location.yazi](sort-by-location.yazi) - Very simple plugin to set sorting for directories
 - [zsteroid.yazi](zsteroid.yazi) - improved zoxide plugin
 - [preview-tree-sitter.yazi](preview-tree-sitter.yazi) -
-- [preview-torrent.yazi](preview-torrent.yazi) -
 - [fselect.yazi](fselect.yazi) -
 - [topaste.yazi](topaste.yazi) -

@@ -2,6 +2,7 @@
 
 local M = {}
 
+---@param job Job
 function M:peek(job)
   local output, err = Command('sqlite3'):arg({
     tostring(job.file.url),
