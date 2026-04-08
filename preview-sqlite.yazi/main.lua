@@ -11,9 +11,9 @@ function M:peek(job)
 
   local out
   if not output then
-    out = Err('Failed to start `sqlite`: %s', err)
+    out = { Err('Failed to start `sqlite`: %s', err) }
   elseif not output.status.success then
-    out = Err('stderr: %s', output.stderr)
+    out = { Err('stderr: %s', output.stderr) }
   else
     out = {}
     local skip = job.skip
