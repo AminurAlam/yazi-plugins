@@ -1,4 +1,4 @@
-<img src="https://http.cat/404">
+<img width="1920" height="1080" alt="preview showing output of `systemctl ststus`" src="https://github.com/user-attachments/assets/a8d79ea1-63e6-4d85-b67d-ca7c8d41bd87" />
 
 # Installation
 

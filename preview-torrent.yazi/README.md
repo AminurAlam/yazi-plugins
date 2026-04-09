@@ -1,4 +1,4 @@
-<img width="1920" height="1080" alt="Screenshot_20260408_214859_niri" src="https://github.com/user-attachments/assets/da406b2b-87a9-4936-9af7-8b603d87bb46" />
+<img width="1920" height="1080" alt="preview showing output of `aria2c -S filename.torrent`" src="https://github.com/user-attachments/assets/da406b2b-87a9-4936-9af7-8b603d87bb46" />
 
 # Installation
 
