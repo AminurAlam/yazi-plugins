@@ -31,7 +31,7 @@ local get_file = function(job)
   end
 
   child, err = Command('grep')
-    :arg({ '-E', [[\.(png|jpg|jpeg|jxl|webp)$]] })
+    :arg({ '-E', [[\.(png|jpg|jpeg|jxl|webp|avif)$]] })
     :stdin(stdout)
     :stdout(Command.PIPED)
     :stderr(Command.PIPED)
@@ -131,8 +131,10 @@ function M:preload(job)
     ya.dbg('  err', efb)
     return efb
   elseif type(efb) == 'string' then
-    -- elseif found and file_or_err and type(file_or_err) ~= 'Error' then
     local file = tostring(efb)
+    if file:match('%.avif\n$') then
+      return Err('avif file format is not supported')
+    end
     ya.dbg('  string', file)
     local output, err, write
     if cbz then
