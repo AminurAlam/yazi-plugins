@@ -2,6 +2,9 @@
 
 local M = {}
 
+---@param file File
+---@return ui.Line[]?
+---@return Error?
 local audio_ffprobe = function(file)
   -- stylua: ignore
   local cmd = Command('ffprobe'):arg {
@@ -22,7 +25,7 @@ local audio_ffprobe = function(file)
   elseif type(json) ~= 'table' then
     return nil, Err('Invalid `ffprobe` output: %s', output.stdout)
   end
-  ya.dbg(json)
+  -- ya.dbg(json)
 
   local audio_stream = json.streams[1]
   local tags = json.format.tags or audio_stream.tags or audio_stream
@@ -71,7 +74,6 @@ local audio_ffprobe = function(file)
     sr = string.format('%.1fkhz', sr / 1000)
   end
   local br = tonumber((audio_stream.bit_rate or json.format.bit_rate or 0) // 1000) .. ' kb/s'
-  ya.dbg(bd, sr)
   for _, item in ipairs({
     '',
     '# Specs',
@@ -86,37 +88,50 @@ local audio_ffprobe = function(file)
   return data
 end
 
+---@param job Job
 function M:peek(job)
   local start, cache = os.clock(), ya.file_cache(job)
-  local ok, err = self:preload(job)
-
-  local img_area
-  if cache and fs.cha(cache) then
-    ya.sleep(math.max(0, rt.preview.image_delay / 1000 + start - os.clock()))
-    img_area, err = ya.image_show(cache, job.area)
+  if not cache then
+    return
   end
+
+  local err = self:preload(job)
+  if err then
+    ya.dbg(tostring(err)) -- TODO: fix random Failed to rename error
+  end
+
+  ya.sleep(math.max(0, rt.preview.image_delay / 1000 + start - os.clock()))
+  local img_area, err = ya.image_show(cache, job.area)
+  if err then
+    -- ya.preview_widget(job, err) -- ignore because we have more stuff to print
+    -- return
+  end
+
+  local img_height = (img_area and img_area.h or 0)
 
   ya.preview_widget(job, {
     ui.Text(audio_ffprobe(job.file)):area(ui.Rect {
       x = job.area.x,
-      y = job.area.y + (img_area and img_area.h or 0),
+      y = job.area.y + img_height,
       w = job.area.w,
-      h = job.area.h,
+      h = job.area.h - img_height,
     }),
   })
 end
 
-function M:seek(job) end
+function M:seek() end
 
+---@param job Job
+---@return Error?
 function M:preload(job)
   local cache = ya.file_cache(job)
   if not cache then
-    return true
+    return
   end
 
   local cha = fs.cha(cache)
   if cha and cha.len > 0 then
-    return true
+    return
   end
 
   -- stylua: ignore
@@ -125,6 +140,7 @@ function M:preload(job)
       '-hide_banner',
       '-loglevel', 'warning',
       '-i', tostring(job.file.url),
+      '-frames:v', '1',
       '-an',
       -- '-vcodec', 'copy',
       string.format('%s.jpg', cache),
@@ -133,16 +149,16 @@ function M:preload(job)
     :output()
 
   if not output then
-    return true, Err('Failed to start `ffmpeg`, error: %s', err)
+    return Err('Failed to start `ffmpeg`, error: %s', err)
   elseif not output.status.success then
-    return true, Err('Failed to get image, stderr: %s', output.stderr)
+    return Err('Failed to get image, stderr: %s', output.stderr)
   end
 
-  local ok, err = os.rename(string.format('%s.jpg', cache), tostring(cache))
+  local ok, err = fs.rename(Url(string.format('%s.jpg', cache)), cache)
   if ok then
-    return true
+    return
   else
-    return true, Err('Failed to rename: %s', err)
+    return Err('Failed to rename: %s', err)
   end
 end
 
