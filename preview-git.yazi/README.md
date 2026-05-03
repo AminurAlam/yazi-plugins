@@ -1,4 +1,4 @@
-<img width="1920" height="1080" alt="preview of git remote get-url, git status, git log" src="https://github.com/user-attachments/assets/ec8a7334-a4cf-41b1-b85a-c609e48e3217" />
+<img width="1920" height="1080" alt="preview of git remote get-url, git status, git log" src="https://github.com/user-attachments/assets/257f5167-c192-4152-a4c2-e2a2dfeb2895" />
 
 shows the following things:
 
