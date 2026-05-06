@@ -2,7 +2,7 @@
 
 shows the following things:
 
-- remote url (origin and upstream)
+- remote urls
 - git status
 - git log of recent commits
 

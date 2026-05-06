@@ -57,7 +57,7 @@ function M:preload(job)
   if not output or err then
     return Err('Failed to start `typst`: %s', err)
   elseif not output.status.success then
-    return Err(output.stderr)
+    return Err('%s', output.stderr)
   end
 
   if job.skip > 0 and not fs.cha(cache) then
