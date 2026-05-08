@@ -1,4 +1,4 @@
---- @since 25.12.29
+--- @since 26.5.6
 
 local M = {}
 
@@ -276,29 +276,21 @@ function M:render_table(job, extra, config)
   end
 
   -- Plugins
-  -- TODO: figure out new dynamic plugins: yazi-binding/src/config/previewer.rs
-  -- for k, v in pairs(rt.plugin.previewers:match()) do
-  --   ya.dbg(k, v.name)
-  -- end
-  if false and config.plugins_section.enable then
-    local spotter = rt.plugin.spotters(job.file, job.mime) ---@diagnostic disable-line: undefined-field
-    local previewer = rt.plugin.previewers(job.file, job.mime) ---@diagnostic disable-line: undefined-field
-    local fetchers = rt.plugin.fetchers(job.file, job.mime) ---@diagnostic disable-line: undefined-field
-    local preloaders = rt.plugin.preloaders(job.file, job.mime) ---@diagnostic disable-line: undefined-field
-
-    for i, v in ipairs(fetchers) do
-      fetchers[i] = v.cmd
+  if config.plugins_section.enable then
+    local get_plugin = function(type)
+      local text = ''
+      for _, plugin in pairs(rt.plugin[type]:match({ mime = job.mime, file = job.file })) do
+        text = text .. plugin.name .. ', '
+      end
+      ya.dbg(text)
+      return text:sub(1, -3)
     end
-    for i, v in ipairs(preloaders) do
-      preloaders[i] = v.cmd
-    end
-
     add_section {
       title = 'Plugins',
-      { 'Spotter', spotter and spotter.cmd or '-' },
-      { 'Previewer', previewer and previewer.cmd or '-' },
-      { 'Fetchers', #fetchers ~= 0 and table.concat(fetchers, ', ') or '-' },
-      { 'Preloaders', #preloaders ~= 0 and table.concat(preloaders, ', ') or '-' },
+      { 'Spotter', get_plugin('spotters') },
+      { 'Previewer', get_plugin('previewers') },
+      { 'Fetchers', get_plugin('fetchers') },
+      { 'Preloaders', get_plugin('preloaders') },
     }
   end
 
