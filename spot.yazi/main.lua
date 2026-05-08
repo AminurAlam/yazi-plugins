@@ -276,9 +276,13 @@ function M:render_table(job, extra, config)
   end
 
   -- Plugins
-  if config.plugins_section.enable then
-    local spotter = rt.plugin.spotter(job.file, job.mime) ---@diagnostic disable-line: undefined-field
-    local previewer = rt.plugin.previewer(job.file, job.mime) ---@diagnostic disable-line: undefined-field
+  -- TODO: figure out new dynamic plugins: yazi-binding/src/config/previewer.rs
+  -- for k, v in pairs(rt.plugin.previewers:match()) do
+  --   ya.dbg(k, v.name)
+  -- end
+  if false and config.plugins_section.enable then
+    local spotter = rt.plugin.spotters(job.file, job.mime) ---@diagnostic disable-line: undefined-field
+    local previewer = rt.plugin.previewers(job.file, job.mime) ---@diagnostic disable-line: undefined-field
     local fetchers = rt.plugin.fetchers(job.file, job.mime) ---@diagnostic disable-line: undefined-field
     local preloaders = rt.plugin.preloaders(job.file, job.mime) ---@diagnostic disable-line: undefined-field
 
