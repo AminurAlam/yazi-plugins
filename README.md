@@ -35,4 +35,3 @@
 - [zsteroid.yazi](zsteroid.yazi) - improved zoxide plugin
 - [preview-tree-sitter.yazi](preview-tree-sitter.yazi) -
 - [fselect.yazi](fselect.yazi) -
-- [topaste.yazi](topaste.yazi) -
