@@ -32,6 +32,4 @@
 ## WIP Plugins (may be broken)
 
 - [sort-by-location.yazi](sort-by-location.yazi) - Very simple plugin to set sorting for directories
-- [zsteroid.yazi](zsteroid.yazi) - improved zoxide plugin
-- [preview-tree-sitter.yazi](preview-tree-sitter.yazi) -
 - [fselect.yazi](fselect.yazi) -
