@@ -6,10 +6,6 @@
 
 - shows exif data of an image
 
-# Downsides
-
-- slow for large images (5MB+)
-
 # Installation
 
 ```sh
@@ -19,8 +15,7 @@ ya pkg add AminurAlam/yazi-plugins:spot AminurAlam/yazi-plugins:spot-image
 # Dependencies
 
 - [spot.yazi](/spot.yazi) - backend plugin
-- [imagemagick](https://repology.org/project/imagemagick/versions) - for getting metadata
-- [inkscape](https://repology.org/project/inkscape/versions) - for getting svg info (optional)
+- [exiv2](https://repology.org/project/exiv2/versions) - for getting exif data
 
 # Usage
 
