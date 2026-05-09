@@ -12,7 +12,7 @@ return {
       if file.cha.is_dir then
         return '%dir%'
       else
-        return string.rep(string.gsub(file.name, [[^.*(%..+)$]], '%1'))
+        return string.rep(file.name:gsub([[^.*(%..+)$]], '%1'))
       end
     end
     local cur = cx.active.current ---@type tab__Folder

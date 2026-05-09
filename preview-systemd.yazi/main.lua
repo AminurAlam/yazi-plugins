@@ -5,7 +5,7 @@ local M = {}
 ---@param job Job
 function M:peek(job)
   local parent = tostring(job.file.url.parent.name)
-  if string.match(parent, '%.wants$') then
+  if parent:match('%.wants$') then
     parent = tostring(job.file.url.parent.parent.name)
   end
   ya.dbg(parent)
@@ -23,7 +23,7 @@ function M:peek(job)
   else
     out = {}
     local skip = job.skip
-    for i in string.gmatch(output.stdout, '[^\n]+') do
+    for i in output.stdout:gmatch('[^\n]+') do
       if skip < 1 then
         out[#out + 1] = i
       else

@@ -193,8 +193,8 @@ local format_size = function(size)
     unit_index = unit_index + 1
   end
 
-  local str = string.format('%.2f', size)
-  str = string.gsub(str, '(%d),?0*$', '%1')
+  local str = ('%.2f'):format(size)
+  str = str:gsub('(%d),?0*$', '%1')
   return str .. ' ' .. units[unit_index]
 end
 
@@ -248,10 +248,10 @@ function M:render_table(job, extra, config)
     if not output or err then
       return Err('Error: %s', err)
     elseif config.metadata_section.show_compression == 'percentage' then
-      comp_size = string.gsub(output.stdout, '.* (%d+%.%d+%%)', '%1')
+      comp_size = output.stdout:gsub('.* (%d+%.%d+%%)', '%1')
     elseif config.metadata_section.show_compression == 'size' then
       comp_size =
-        format_size(tonumber(string.gsub(output.stdout, '.* (%d+) bytes uncompressed.*', '%1'), 10))
+        format_size(tonumber(output.stdout:gsub('.* (%d+) bytes uncompressed.*', '%1'), 10))
     end
     size = size .. ' (' .. comp_size .. ')'
   end

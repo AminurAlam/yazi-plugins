@@ -15,7 +15,7 @@ function M:peek(job)
   else
     out = {}
     local skip = job.skip
-    for i in string.gmatch(output.stdout, '[^\n]+') do
+    for i in output.stdout:gmatch('[^\n]+') do
       if skip < 1 then
         out[#out + 1] = i
       else

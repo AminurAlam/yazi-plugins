@@ -35,7 +35,7 @@ local get_stream_info = function(file)
     -- stylua: ignore
     local cmd = Command('ffprobe'):arg {
       '-v', 'quiet',
-      '-select_streams', string.lower(string.sub(stream, 1, 1)),
+      '-select_streams', stream:sub(1, 1):lower(),
       '-show_entries', 'stream_tags:stream',
       '-of', 'json=c=1',
       file.name,

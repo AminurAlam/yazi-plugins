@@ -17,8 +17,8 @@ local comicinfo = function(file)
   local text = cout and cout.stdout
 
   for i, tag in ipairs({ 'Title', 'Series', 'Writer', 'Penciller', 'Genre' }) do
-    local start, finish = string.find(text, string.format('<%s>.*</%s>', tag, tag))
-    ci[i] = (start and finish) and { tag, string.sub(text, start + #tag + 2, finish - #tag - 3) }
+    local start, finish = text:find(string.format('<%s>.*</%s>', tag, tag))
+    ci[i] = (start and finish) and { tag, text:sub(start + #tag + 2, finish - #tag - 3) }
       or { tag, '' }
   end
 
