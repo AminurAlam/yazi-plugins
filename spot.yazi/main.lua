@@ -17,7 +17,7 @@ local get_config = ya.sync(function(st)
         hash_filesize_limit = 150, -- in MB, set 0 to disable
         relative_time = true, -- 2026-01-01 or n days ago
         time_format = '%Y-%m-%d %H:%M', -- https://www.man7.org/linux/man-pages/man3/strftime.3.html
-        show_compression = 'size', ---@type false|"size"|"percentage"
+        show_compression = true, ---@type boolean
       },
       plugins_section = {
         enable = true,
@@ -242,18 +242,19 @@ function M:render_table(job, extra, config)
   local size = format_size(get_total_size({ job.file.url })) ---@diagnostic disable-line: missing-fields
 
   if config.metadata_section.show_compression and job.mime == 'application/zip' then
-    local comp_size = '??'
     local output, err = Command('zipinfo'):arg({ '-t', tostring(job.file.url) }):output()
 
     if not output or err then
       return Err('Error: %s', err)
-    elseif config.metadata_section.show_compression == 'percentage' then
-      comp_size = output.stdout:gsub('.* (%d+%.%d+%%)', '%1')
-    elseif config.metadata_section.show_compression == 'size' then
-      comp_size =
-        format_size(tonumber(output.stdout:gsub('.* (%d+) bytes uncompressed.*', '%1'), 10))
     end
-    size = size .. ' (' .. comp_size .. ')'
+    if config.metadata_section.show_compression == true then
+      size = size
+        .. ' ('
+        .. format_size(tonumber(output.stdout:gsub('.* (%d+) bytes uncompressed.*', '%1'), 10))
+        .. ', '
+        .. output.stdout:gsub('.* (%d+%.%d+%%)', '%1')
+        .. ')'
+    end
   end
 
   -- Metadata
