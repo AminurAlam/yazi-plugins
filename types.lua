@@ -1,5 +1,8 @@
 --- @since 25.5.31
 
+---@diagnostic disable: duplicate-doc-alias
+---@diagnostic disable: duplicate-doc-field
+
 ---@type File
 File = File
 
@@ -15,7 +18,7 @@ File = File
 ---@field PIPED number
 
 ---@class (exact) tab__Tab
----@field finder bool
+---@field finder boolean
 
 ---@class (exact) ya
 ---@field manager_emit fun(command: string, opts: table)
@@ -42,3 +45,7 @@ File = File
 
 ---@alias Section { title: string }|table<number, table<string, Renderable>>
 ---@alias Sections table<number, Section>
+
+-- sort-by-location.yazi
+---@alias SortTable { by: "none"|"mtime"|"btime"|"extension"|"alphabetical"|"natural"|"size"|"random", reverse: boolean }
+---@alias SortConf table<integer, {pattern: string, sort: SortTable}>|table<"default", SortTable>

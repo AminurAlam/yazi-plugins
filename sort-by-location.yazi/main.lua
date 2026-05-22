@@ -23,27 +23,33 @@ local get_pref = ya.sync(function(st)
     }
 end)
 
+---@param config SortConf
+---@return SortTable
 local find_match = function(config)
-  local cwd = cx.active.current.cwd
-  for i, conf in ipairs(config) do
-    if tostring(cwd):find(conf.pattern) then
-      return i
+  local cwd = tostring(cx.active.current.cwd)
+  for _, conf in ipairs(config) do
+    if cwd:find(conf.pattern) then
+      return conf.sort
     end
   end
+  return config.default
 end
 
 -- TODO: fix opening new tab with different sorting fucks up previous tab
 -- TODO: fix starting at a config directory fucks up other directories
+
+---@param config SortConf
 function M:setup(config)
   ps.sub('ind-sort', function()
-    local match = find_match(config)
-    if match then
-      set_pref()
-      return config[match].sort
-    else
-      return get_pref()
-    end
+    ya.dbg(get_pref())
+    return find_match(config) ---@diagnostic disable-line: redundant-return-value
   end)
+end
+
+-- TODO: sort changing by keymap
+function M:entry()
+  -- config.default = { by = arg[1], reverse = arg.reverse }
+  -- set_pref(config.default)
 end
 
 return M
