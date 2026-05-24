@@ -2,26 +2,28 @@
 
 local M = {}
 
-local set_pref = ya.sync(function(st)
-  st.sort = {
-    by = cx.active.pref.sort_by,
-    reverse = cx.active.pref.sort_reverse,
-    dir_first = cx.active.pref.sort_dir_first,
-    translit = cx.active.pref.sort_translit,
-    sensitive = cx.active.pref.sort_sensitive,
-  }
+---@type fun(opts: SortConf): nil
+local set_config = ya.sync(function(st, opts)
+  st.opts = opts
 end)
 
-local get_pref = ya.sync(function(st)
-  return st.sort
-    or {
-      by = cx.active.pref.sort_by,
-      reverse = cx.active.pref.sort_reverse,
-      dir_first = cx.active.pref.sort_dir_first,
-      translit = cx.active.pref.sort_translit,
-      sensitive = cx.active.pref.sort_sensitive,
-    }
+---@type fun(): SortConf
+local get_config = ya.sync(function(st)
+  return st.opts or { default = { by = 'extension', reverse = false } }
 end)
+
+local function tbl_deep_extend(default, config)
+  if type(config) ~= 'table' then
+    return config
+  end
+
+  default = (type(default) == 'table') and default or {}
+  for key, _ in pairs(config) do
+    default[key] = tbl_deep_extend(default[key], config[key])
+  end
+
+  return default
+end
 
 ---@param config SortConf
 ---@return SortTable
@@ -40,16 +42,28 @@ end
 
 ---@param config SortConf
 function M:setup(config)
+  set_config(tbl_deep_extend(get_config(), config))
   ps.sub('ind-sort', function()
-    ya.dbg(get_pref())
-    return find_match(config) ---@diagnostic disable-line: redundant-return-value
+    return find_match(get_config()) ---@diagnostic disable-line: redundant-return-value
   end)
 end
 
--- TODO: sort changing by keymap
-function M:entry()
-  -- config.default = { by = arg[1], reverse = arg.reverse }
-  -- set_pref(config.default)
+---@param job Job
+function M:entry(job)
+  local pref = get_config().default
+  local by, rev = job.args[1], pref.reverse
+
+  if pref.by == by then
+    rev = not rev
+  elseif by == 'mtime' or by == 'size' then
+    rev = true
+  end
+
+  local new = { by = by, reverse = rev }
+  ya.dbg(new)
+  ya.emit('sort', new)
+  -- TODO: change both default and current match
+  set_config(tbl_deep_extend(get_config(), { default = new }))
 end
 
 return M
