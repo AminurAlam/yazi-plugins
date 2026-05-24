@@ -37,8 +37,8 @@ local find_match = function(config)
   return config.default
 end
 
--- TODO: fix opening new tab with different sorting fucks up previous tab
--- TODO: fix starting at a config directory fucks up other directories
+-- TODO: ask in config if new short should be local or global
+-- TODO: turn off regex match and do literal match
 
 ---@param config SortConf
 function M:setup(config)

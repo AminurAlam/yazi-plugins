@@ -26,10 +26,10 @@
 
 - [fchar.yazi](fchar.yazi) - `jump-to-char` with more features
 - [nextension.yazi](nextension.yazi) - jump to next file with different extension than current one
+- [sort-by-location.yazi](sort-by-location.yazi) - Very simple plugin to set sorting for individual directories
 
 ---
 
 ## WIP Plugins (may be broken)
 
-- [sort-by-location.yazi](sort-by-location.yazi) - Very simple plugin to set sorting for directories
 - [fselect.yazi](fselect.yazi) -
