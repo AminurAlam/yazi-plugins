@@ -44,8 +44,21 @@ function M:preload(job)
     return nil, 0
   end
 
+  local root, path = '.', job.file.url
+
+  while path.parent and path.name ~= nil do
+    path = Url(path.parent)
+    ya.dbg(path)
+    if fs.cha(Url(path .. '/.git')) then
+      root = tostring(path)
+      break
+    end
+  end
+
   local output, err = Command('typst'):arg({
     'compile',
+    '--root',
+    root,
     '-f',
     'png',
     '--pages',

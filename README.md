@@ -33,3 +33,4 @@
 ## WIP Plugins (may be broken)
 
 - [fselect.yazi](fselect.yazi) -
+- [panes.yazi](panes.yazi) -
