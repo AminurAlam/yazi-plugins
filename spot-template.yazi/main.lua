@@ -1,5 +1,6 @@
 local M = {}
 
+---@param job Job
 function M:spot(job)
   require('spot'):spot(job, {
     {

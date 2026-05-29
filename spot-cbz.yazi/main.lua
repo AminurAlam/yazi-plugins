@@ -1,5 +1,7 @@
 local M = {}
 
+---@param file File
+---@return table?
 local comicinfo = function(file)
   local ci = { title = 'ComicInfo' }
   local cout = Command('unzip'):arg({ '-p', file.name, 'ComicInfo.xml' }):output()
@@ -25,8 +27,9 @@ local comicinfo = function(file)
   return ci
 end
 
+---@param job Job
 function M:spot(job)
-  return require('spot'):spot(job, { comicinfo(job.file) })
+  require('spot'):spot(job, { comicinfo(job.file) })
 end
 
 return M

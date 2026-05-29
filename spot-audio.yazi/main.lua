@@ -1,8 +1,8 @@
 local M = {}
 
 ---@param file File
----@return boolean
----@return Sections|Error
+---@return Sections
+---@return Error?
 local audio_ffprobe = function(file)
   -- stylua: ignore
   local cmd = Command('ffprobe'):arg {
@@ -14,14 +14,14 @@ local audio_ffprobe = function(file)
 
   local output, err = cmd:output()
   if not output then
-    return false, Err('Failed to start `ffprobe`, error: %s', err)
+    return {}, Err('Failed to start `ffprobe`, error: %s', err)
   end
 
   local json = ya.json_decode(output.stdout)
   if not json then
-    return false, Err('Failed to decode `ffprobe` output: %s', output.stdout)
+    return {}, Err('Failed to decode `ffprobe` output: %s', output.stdout)
   elseif type(json) ~= 'table' then
-    return false, Err('Invalid `ffprobe` output: %s', output.stdout)
+    return {}, Err('Invalid `ffprobe` output: %s', output.stdout)
   end
   -- ya.dbg(json)
 
@@ -85,25 +85,25 @@ local audio_ffprobe = function(file)
   }
 
   -- ya.dbg(data)
-  return true, data
+  return data
 end
 
 ---@param file File
----@return boolean
----@return Sections|Error
+---@return Sections
+---@return Error?
 local audio_mediainfo = function(file)
   local cmd = Command('mediainfo'):arg { '--Output=JSON', file.name }
 
   local output, err = cmd:output()
   if not output then
-    return false, Err('Failed to start `mediainfo`, error: %s', err)
+    return {}, Err('Failed to start `mediainfo`, error: %s', err)
   end
 
   local json = ya.json_decode(output.stdout)
   if not json then
-    return false, Err('Failed to decode `mediainfo` output: %s', output.stdout)
+    return {}, Err('Failed to decode `mediainfo` output: %s', output.stdout)
   elseif type(json) ~= 'table' then
-    return false, Err('Invalid `mediainfo` output: %s', output.stdout)
+    return {}, Err('Invalid `mediainfo` output: %s', output.stdout)
   end
   -- ya.dbg(json)
 
@@ -154,22 +154,22 @@ local audio_mediainfo = function(file)
 
   -- ya.dbg(data)
 
-  return true, data
+  return data
 end
 
 ---@param job Job
 function M:spot(job)
-  local ok, info = audio_ffprobe(job.file)
-  if not ok then
-    ya.dbg(info)
-    ok, info = audio_mediainfo(job.file)
-    if not ok then
-      ya.dbg(info)
+  local sections, err = audio_ffprobe(job.file)
+  if not sections or err then
+    ya.dbg(err)
+    sections, err = audio_mediainfo(job.file)
+    if not sections then
+      ya.dbg(err)
     end
   end
 
-  if ok then
-    require('spot'):spot(job, info)
+  if sections then
+    require('spot'):spot(job, sections)
   end
 end
 

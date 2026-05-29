@@ -28,6 +28,9 @@ local format_br = function(e, stream)
   return string.format('@%.2f%sbps', br, postfix)
 end
 
+---@param file File
+---@return Sections
+---@return Error?
 local get_stream_info = function(file)
   local sections = {}
 
@@ -43,14 +46,14 @@ local get_stream_info = function(file)
 
     local output, err = cmd:output()
     if not output then
-      return nil, Err('Failed to start `ffprobe`, error: %s', err)
+      return {}, Err('Failed to start `ffprobe`, error: %s', err)
     end
 
     local t = ya.json_decode(output.stdout)
     if not t then
-      return nil, Err('Failed to decode `ffprobe` output: %s', output.stdout)
+      return {}, Err('Failed to decode `ffprobe` output: %s', output.stdout)
     elseif type(t) ~= 'table' then
-      return nil, Err('Invalid `ffprobe` output: %s', output.stdout)
+      return {}, Err('Invalid `ffprobe` output: %s', output.stdout)
     end
 
     local data = { title = stream }
@@ -87,8 +90,14 @@ end
 
 -- TODO: general section with duration, stream count, overall br etc
 -- videos dont have simple time in ms, subtitles do. maybe do `frames*fps` ?
+
+---@param job Job
 function M:spot(job)
-  require('spot'):spot(job, get_stream_info(job.file))
+  local sections, err = get_stream_info(job.file)
+  if err then
+    ya.err(tostring(err))
+  end
+  require('spot'):spot(job, sections)
 end
 
 return M

@@ -1,12 +1,7 @@
-/.luarc.json
 /README_.md
 /test/*
 
-/ffmpeg-stats.yazi
 /git.yazi
-/hover-after-moved.yazi
 /mime-ext.yazi
-/piper.yazi
-/pref-by-location.yazi
 /smart-enter.yazi
 /types.yazi

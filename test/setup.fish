@@ -5,7 +5,7 @@
 ln -fs "$XDG_STATE_HOME/yazi/yazi.log" (status dirname)
 
 function dbg
-    yazi --clear-cache 2>/dev/null
+    # yazi --clear-cache 2>/dev/null
     YAZI_LOG=debug yazi $argv # 2>/dev/null
     and clear
     cat ~/.local/state/yazi/yazi.log \
