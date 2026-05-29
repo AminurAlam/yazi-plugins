@@ -68,6 +68,7 @@ list of plugins using spot.yazi as a base
 
 - [spot-audio.yazi](/spot-audio.yazi)
 - [spot-video.yazi](/spot-video.yazi)
+- [spot-image.yazi](/spot-image.yazi)
 - [spot-cbz.yazi](/spot-cbz.yazi)
 
 if you are building something on top of spot.yazi feel free to add it here

@@ -1,22 +1,19 @@
 local M = {}
 
--- TODO: cache json
-
 ---@param job Job
----@return Sections
+---@return Sections?
 ---@return integer?
-local image_info = function(job)
-  -- TODO: replace with exiv2
+local image_exif = function(job)
   local output, err = Command('exiv2'):arg({ '-PElt', tostring(job.file.url) }):output()
 
   if not output or err then
     ya.err('Failed to start `exiv2`: ', tostring(err))
-    return {}
+    return
   elseif not output.status.success then
     ya.err(output.stderr)
-    return {}
+    return
   elseif output.stdout == '' then
-    return {}
+    return
   end
 
   local data, key_len = { title = 'EXIF' }, 0
@@ -32,18 +29,32 @@ local image_info = function(job)
     ::continue::
   end
 
-  return { data }, key_len
+  return data, key_len
 end
 
 ---@param job Job
 function M:spot(job)
-  local sections, key_len = image_info(job) ---@type Sections
-  local opts
-  if key_len and key_len > 0 then
-    opts = { style = { key_length = ya.clamp(0, key_len, 25) } }
-    ya.dbg('key_len', key_len)
+  local sections = {}
+  local info = ya.image_info(job.file.url)
+  local exif, key_len = image_exif(job)
+
+  if info then
+    sections[#sections + 1] = {
+      title = 'Image',
+      { 'Format', tostring(info.format) },
+      { 'Size', string.format('%dx%d', info.w, info.h) },
+      { 'Color', tostring(info.color) },
+    }
   end
-  require('spot'):spot(job, sections, opts)
+  if exif then
+    sections[#sections + 1] = exif
+  end
+
+  require('spot'):spot(job, sections, {
+    style = {
+      key_length = key_len and ya.clamp(0, key_len, 25),
+    },
+  })
 end
 
 return M

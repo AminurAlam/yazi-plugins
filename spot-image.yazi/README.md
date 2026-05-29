@@ -1,6 +1,4 @@
-<img width="1920" height="1080" alt="Screenshot_20260125_212320_niri" src="https://github.com/user-attachments/assets/d52e6103-e811-49c8-95fb-96deb1973598" />
-
-<img width="1920" height="1080" alt="Screenshot_20260125_212346_niri" src="https://github.com/user-attachments/assets/d4da6108-f0ec-464b-9891-a61b3c41c378" />
+<img width="1920" height="1080" src="https://github.com/user-attachments/assets/1c7b0b09-40bd-47db-9631-73961aaa88e2" />
 
 # Features
 
