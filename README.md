@@ -32,5 +32,8 @@
 
 ## WIP Plugins (may be broken)
 
-- [fselect.yazi](fselect.yazi) -
-- [panes.yazi](panes.yazi) -
+- [fselect.yazi](fselect.yazi)
+- [last-visual.yazi](last-visual.yazi)
+- [max-pane.yazi](max-pane.yazi) - maximize panes
+- [preview-imgdir.yazi](preview-imgdir.yazi)
+- [state.yazi](state.yazi)
