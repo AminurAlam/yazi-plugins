@@ -2,89 +2,94 @@
 
 local M = {}
 
----@param file File
----@return ui.Line[]?
----@return Error?
-local audio_ffprobe = function(file)
-  -- stylua: ignore
-  local cmd = Command('ffprobe'):arg {
-    '-v', 'quiet',
-    '-show_entries', 'stream_tags:format:stream',
-    '-of', 'json=c=1',
-    file.name
-  }
+---@param lines string[]
+---@param key string
+---@param value string
+local function add_line(lines, key, value)
+  if value and value ~= '' then
+    table.insert(lines, string.format('%s: %s', key, value))
+  end
+end
 
-  local output, err = cmd:output()
-  if not output then
-    return {}, Err('Failed to start `ffprobe`, error: %s', err)
+---@param value any
+---@return string
+local function join_tag(value)
+  if type(value) == 'table' then
+    return table.concat(value, ' / ')
+  end
+  return value or ''
+end
+
+---@param ... any
+---@return any
+local function first(...)
+  for i = 1, select('#', ...) do
+    local v = select(i, ...)
+    if v ~= nil and v ~= '' then
+      return v
+    end
+  end
+end
+
+---@param file File
+---@return ui.Line[]
+local audio_exiftool = function(file)
+  local output, err = Command('exiftool'):arg({
+    '-j',
+    '-a',
+    '-s',
+    file.name,
+  }):output()
+
+  if not output or err then
+    return { Err('Failed to start `exiftool`, error: %s', err) }
   end
 
   local json = ya.json_decode(output.stdout)
   if not json then
-    return nil, Err('Failed to decode `ffprobe` output: %s', output.stdout)
+    return { Err('Failed to decode `exiftool` output: %s', output.stdout) }
   elseif type(json) ~= 'table' then
-    return nil, Err('Invalid `ffprobe` output: %s', output.stdout)
+    return { Err('Invalid `exiftool` output: %s', output.stdout) }
   end
   -- ya.dbg(json)
 
-  local audio_stream = json.streams[1]
-  local tags = json.format.tags or audio_stream.tags or audio_stream
-  local duration = json.format.duration
-  if duration then
-    duration = tonumber(duration)
-    duration = string.format('%d:%02d', math.floor(duration / 60), math.floor(duration % 60))
+  local tags = json[1] or {}
+
+  local data = {} ---@type string[]
+  local artist = join_tag(tags.Artist)
+  local title = tags.Title
+  local album = tags.Album
+  local genre = join_tag(tags.Genre)
+  -- TODO: uniq instead of first
+  local date = first(tags.Originaldate, tags.Date, tags.DateTimeOriginal, tags.CreateDate)
+  local duration = tags.Duration
+  local cover = tags.PictureType or ''
+  if tags.PictureWidth and tags.PictureHeight then
+    cover = string.format('%s %sx%s', cover, tags.PictureWidth, tags.PictureHeight)
   end
 
-  local data = {}
-  local title, album, aar, ar =
-    tags.TITLE or tags.title or '',
-    tags.ALBUM or tags.album or '',
-    tags.ALBUM_ARTIST or tags.album_artist or '',
-    tags.ARTIST or tags.artist or ''
+  table.insert(data, artist .. ' - ' .. title)
+  add_line(data, 'Album', album)
+  add_line(data, 'Genre', genre)
+  add_line(data, 'Duration', duration)
+  add_line(data, 'Date', date)
+  add_line(data, 'Cover', cover)
 
-  if title .. album .. ar .. aar ~= '' then
-    local img_stream = json.streams[2]
-    local date = tags.DATE or tags.date or ''
-    local c = ''
-    local artist = ar
-
-    if tags.ORIGINALDATE and tags.ORIGINALDATE ~= '' then
-      date = date .. ' / ' .. tags.ORIGINALDATE
-    end
-    if (aar ~= '') and (aar ~= ar) then
-      artist = artist .. ' / ' .. aar
-    end
-    if img_stream then
-      c = img_stream.codec_name .. ' ' .. img_stream.width .. 'x' .. img_stream.height
-    end
-
-    data = {
-      ui.Line(string.format('%s - %s', artist, title)),
-      ui.Line(string.format('%s: %s', 'Duration', duration)),
-      ui.Line(string.format('%s: %s', 'Album', album)),
-      ui.Line(string.format('%s: %s', 'Genre', tags.GENRE or tags.genre or 'No genre')),
-      ui.Line(string.format('%s: %s', 'Date', date)),
-      c ~= '' and ui.Line(string.format('%s: %s', 'Cover art', c)) or nil,
-    }
-  end
-
-  local bd = audio_stream.bits_per_raw_sample or '1'
-  local sr = audio_stream.sample_rate
+  local sr = first(tags.AudioSampleRate, tags.SampleRate)
+  local bd = first(tags.AudioBitsPerSample, tags.BitsPerSample)
   if sr then
-    sr = string.format('%.1fkhz', sr / 1000)
-  end
-  local br = tonumber((audio_stream.bit_rate or json.format.bit_rate or 0) // 1000) .. ' kb/s'
-  for _, item in ipairs({
-    '',
-    '# Specs',
-    string.format('%s: %s', 'Format', json.format.format_name),
-    string.format('%s: %sbit / %s', 'Quality', bd, sr),
-    string.format('%s: %s', 'BitRate', br),
-    string.format('%s: %s', 'Channels', tostring(audio_stream.channels or '?')),
-  }) do
-    data[#data + 1] = ui.Line(item)
+    sr = string.format('%.1f kHz', tonumber(sr) / 1000)
   end
 
+  table.insert(data, '')
+  table.insert(data, '# spec')
+  add_line(data, 'Format', first(tags.AudioFormat, tags.FileType))
+  add_line(data, 'Sample Rate', sr)
+  add_line(data, 'Bit Depth', (bd and (bd .. ' bit')))
+  add_line(data, 'BitRate', first(tags.AvgBitrate, tags.AudioBitrate))
+  add_line(data, 'Channels', first(tags.AudioChannels, tags.ChannelMode, tags.Channels))
+
+  -- ya.dbg(data)
   return data
 end
 
@@ -110,7 +115,8 @@ function M:peek(job)
   local img_height = (img_area and img_area.h or 0)
 
   ya.preview_widget(job, {
-    ui.Text(audio_ffprobe(job.file)):area(ui.Rect {
+    ---@diagnostic disable-next-line: assign-type-mismatch
+    ui.Text(audio_exiftool(job.file)):area(ui.Rect {
       x = job.area.x,
       y = job.area.y + img_height,
       w = job.area.w,
@@ -136,17 +142,17 @@ function M:preload(job)
 
   -- stylua: ignore
   local output, err = Command('ffmpeg')
-    :arg({
-      '-hide_banner',
-      '-loglevel', 'warning',
-      '-i', tostring(job.file.url),
-      '-frames:v', '1',
-      '-an',
-      -- '-vcodec', 'copy',
-      string.format('%s.jpg', cache),
-    })
-    :stderr(Command.PIPED)
-    :output()
+      :arg({
+        '-hide_banner',
+        '-loglevel', 'warning',
+        '-i', tostring(job.file.url),
+        '-frames:v', '1',
+        '-an',
+        -- '-vcodec', 'copy',
+        string.format('%s.jpg', cache),
+      })
+      :stderr(Command.PIPED)
+      :output()
 
   if not output then
     return Err('Failed to start `ffmpeg`, error: %s', err)

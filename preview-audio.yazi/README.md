@@ -8,7 +8,7 @@ ya pkg add AminurAlam/yazi-plugins:preview-audio
 
 # Dependencies
 
-- [ffmpeg](https://repology.org/project/ffmpeg/versions) - for extracting images and metadata
+- [exiftool](https://repology.org/project/exiftool/versions) - for extracting metadata
 
 # Usage
 

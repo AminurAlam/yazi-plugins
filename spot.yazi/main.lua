@@ -214,6 +214,7 @@ function M:render_table(job, extra, config)
 
     rows[#rows + 1] = ui.Row({ section.title or 'No title' })
       :style(ui.Style():fg(config.style.section))
+
     for _, row in ipairs(section) do
       -- label_max_length = math.max(#row[2], label_max_length)
 

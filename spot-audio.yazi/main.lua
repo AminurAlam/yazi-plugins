@@ -1,11 +1,11 @@
 local M = {}
 
 ---@param section Section
----@param label string
+---@param key string
 ---@param value any
-local function add_field(section, label, value)
+local function add_field(section, key, value)
   if value ~= nil and value ~= '' then
-    table.insert(section, { label, tostring(value) })
+    table.insert(section, { key, tostring(value) })
   end
 end
 
@@ -68,6 +68,7 @@ local audio_exiftool = function(file)
   local title = tags.Title
   local album = tags.Album
   local genre = join_tag(tags.Genre)
+  -- TODO: uniq instead of first
   local date = first(tags.Originaldate, tags.Date, tags.DateTimeOriginal, tags.CreateDate)
   local duration = tags.Duration
   local cover = tags.PictureType or ''
