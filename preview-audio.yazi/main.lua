@@ -20,13 +20,12 @@ local function join_tag(value)
   return value or ''
 end
 
----@param ... any
----@return any
-local function first(...)
-  for i = 1, select('#', ...) do
-    local v = select(i, ...)
-    if v ~= nil and v ~= '' then
-      return v
+---@param items table
+---@return string?
+local function first(items)
+  for _, item in pairs(items) do
+    if item ~= nil and item ~= '' then
+      return item
     end
   end
 end
@@ -61,7 +60,7 @@ local audio_exiftool = function(file)
   local album = tags.Album
   local genre = join_tag(tags.Genre)
   -- TODO: uniq instead of first
-  local date = first(tags.Originaldate, tags.Date, tags.DateTimeOriginal, tags.CreateDate)
+  local date = first({ tags.Originaldate, tags.Date, tags.DateTimeOriginal })
   local duration = tags.Duration
   local cover = tags.PictureType or ''
   if tags.PictureWidth and tags.PictureHeight then
@@ -75,19 +74,19 @@ local audio_exiftool = function(file)
   add_line(data, 'Date', date)
   add_line(data, 'Cover', cover)
 
-  local sr = first(tags.AudioSampleRate, tags.SampleRate)
-  local bd = first(tags.AudioBitsPerSample, tags.BitsPerSample)
+  local sr = first({ tags.AudioSampleRate, tags.SampleRate })
+  local bd = first({ tags.AudioBitsPerSample, tags.BitsPerSample })
   if sr then
     sr = string.format('%.1f kHz', tonumber(sr) / 1000)
   end
 
   table.insert(data, '')
   table.insert(data, '# spec')
-  add_line(data, 'Format', first(tags.AudioFormat, tags.FileType))
+  add_line(data, 'Format', first({ tags.AudioFormat, tags.FileType }))
   add_line(data, 'Sample Rate', sr)
   add_line(data, 'Bit Depth', (bd and (bd .. ' bit')))
-  add_line(data, 'BitRate', first(tags.AvgBitrate, tags.AudioBitrate))
-  add_line(data, 'Channels', first(tags.AudioChannels, tags.ChannelMode, tags.Channels))
+  add_line(data, 'BitRate', first({ tags.AvgBitrate, tags.AudioBitrate }))
+  add_line(data, 'Channels', first({ tags.AudioChannels, tags.ChannelMode, tags.Channels }))
 
   -- ya.dbg(data)
   return data
