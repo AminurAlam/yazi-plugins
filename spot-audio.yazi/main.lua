@@ -1,6 +1,6 @@
 local M = {}
 
----@param section table
+---@param section Section
 ---@param label string
 ---@param value any
 local function add_field(section, label, value)
@@ -10,7 +10,7 @@ local function add_field(section, label, value)
 end
 
 ---@param data Sections
----@param section table
+---@param section Section
 local function add_section(data, section)
   if #section > 0 then
     table.insert(data, section)
@@ -41,15 +41,14 @@ end
 ---@return Sections
 ---@return Error?
 local audio_exiftool = function(file)
-  local cmd = Command('exiftool'):arg({
+  local output, err = Command('exiftool'):arg({
     '-j',
     '-a',
     '-s',
     file.name,
-  })
+  }):output()
 
-  local output, err = cmd:output()
-  if not output then
+  if not output or err then
     return {}, Err('Failed to start `exiftool`, error: %s', err)
   end
 
@@ -64,22 +63,18 @@ local audio_exiftool = function(file)
   local data = {} ---@type Sections
   local tags = json[1] or {}
 
+  local gen_sec = { title = 'General' } ---@type Section
   local artist = join_tag(tags.Artist)
   local title = tags.Title
   local album = tags.Album
   local genre = join_tag(tags.Genre)
   local date = first(tags.Originaldate, tags.Date, tags.DateTimeOriginal, tags.CreateDate)
   local duration = tags.Duration
-  local cover
-  if tags.PictureType then
-    cover = tags.PictureType
-
-    if tags.PictureWidth and tags.PictureHeight then
-      cover = string.format('%s (%sx%s)', cover, tags.PictureWidth, tags.PictureHeight)
-    end
+  local cover = tags.PictureType or ''
+  if tags.PictureWidth and tags.PictureHeight then
+    cover = string.format('%s %sx%s', cover, tags.PictureWidth, tags.PictureHeight)
   end
 
-  local gen_sec = { title = 'General' }
   add_field(gen_sec, 'Title', title)
   add_field(gen_sec, 'Artist', artist)
   add_field(gen_sec, 'Album', album)
@@ -88,14 +83,14 @@ local audio_exiftool = function(file)
   add_field(gen_sec, 'Date', date)
   add_field(gen_sec, 'Cover', cover)
 
-  local audio_sec = { title = 'Audio' }
-  add_field(audio_sec, 'Format', first(tags.AudioFormat, tags.FileType))
-
+  local audio_sec = { title = 'Audio' } ---@type Section
   local sr = first(tags.AudioSampleRate, tags.SampleRate)
   local bd = first(tags.AudioBitsPerSample, tags.BitsPerSample)
   if sr then
     sr = string.format('%.1f kHz', tonumber(sr) / 1000)
   end
+
+  add_field(audio_sec, 'Format', first(tags.AudioFormat, tags.FileType))
   add_field(audio_sec, 'Sample Rate', sr)
   add_field(audio_sec, 'Bit Depth', (bd and (bd .. ' bit')))
   add_field(audio_sec, 'BitRate', first(tags.AvgBitrate, tags.AudioBitrate))
