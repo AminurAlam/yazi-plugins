@@ -55,11 +55,20 @@ require("spot"):setup({
 			value = "blue",
 			selected = "yellow",
 		},
-		size = {
-			height = 20,
-			width = 65,
-			key_length = 15,
-		},
+        size = {
+            height = 20, -- unused when auto_resize is set to true
+            width = 60, -- unused when auto_resize is set to true
+
+            auto_resize_width = true,
+            min_width = 30,
+            max_width = 80,
+
+            auto_resize_height = true,
+            min_height = 10,
+            max_height = 50,
+
+            key_length = 15,
+        },
         padding = {
 +          horizontal = 1,
 +          key = 2,

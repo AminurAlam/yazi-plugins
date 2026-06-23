@@ -34,13 +34,22 @@ local get_config = ya.sync(function(st)
         },
 
         size = {
-          height = 20,
-          width = 60,
+          height = 20, -- unused when auto_resize is set to true
+          width = 60, -- unused when auto_resize is set to true
+
+          auto_resize_width = true,
+          min_width = 30,
+          max_width = 80,
+
+          auto_resize_height = true,
+          min_height = 10,
+          max_height = 50,
+
           key_length = 15,
         },
 
         padding = {
-          -- vertical = 5,
+          -- vertical = 1,
           horizontal = 1,
           key = 2,
         },
@@ -215,15 +224,17 @@ end
 ---@param extra table
 ---@param config SpotConf
 ---@return Renderable
+---@return integer
+---@return integer
 function M:render_table(job, extra, config)
   -- Constructed only one time
   local rows = {}
 
-  local hpad = config.style.padding.horizontal
+  local horizontal_pad = config.style.padding.horizontal
   -- local vpad = config.style.padding.vertical
-  local kpad = config.style.padding.key
+  local key_pad = config.style.padding.key
 
-  local key_prefix = (' '):rep(kpad)
+  local key_prefix = (' '):rep(key_pad)
 
   local title_style = ui.Style():fg(config.style.color.title)
   local key_style = ui.Style():fg(config.style.color.key)
@@ -231,11 +242,14 @@ function M:render_table(job, extra, config)
   local selected_style = ui.Style():fg(config.style.color.selected):reverse()
 
   local widths = {
-    ui.Constraint.Length(hpad),
-    ui.Constraint.Length(config.style.size.key_length + kpad),
+    ui.Constraint.Length(horizontal_pad),
+    ui.Constraint.Length(config.style.size.key_length + key_pad),
     ui.Constraint.Fill(1),
-    ui.Constraint.Length(hpad),
+    ui.Constraint.Length(horizontal_pad),
   }
+
+  local min_width = config.style.size.key_length + key_pad + (2 * horizontal_pad)
+  local max_width = min_width
 
   ---@param value string|Renderable
   ---@param prefix string|nil
@@ -271,6 +285,11 @@ function M:render_table(job, extra, config)
           styled_cell(row[2], nil, value_style),
           '',
         })
+
+        local row_width = min_width + (type(row[2]) == 'string' and #row[2] or 0)
+        if row_width > max_width then
+          max_width = row_width
+        end
       end
     end
   end
@@ -339,13 +358,17 @@ function M:render_table(job, extra, config)
     })
   end
 
+  local table_height = #rows
+  local table_width = max_width
+
   return ui
     .Table(rows) ---@diagnostic disable-line: undefined-field
-    :area(job.area) ---@diagnostic disable-line: undefined-field
     :row(1)
     :col(2)
     :widths(widths)
-    :cell_style(selected_style)
+    :cell_style(selected_style),
+    table_height,
+    table_width
   -- :col_style(styles.row_value)
 end
 
@@ -354,8 +377,23 @@ end
 ---@param config SpotConf
 function M:spot(job, extra, config)
   config = tbl_strict_extend(get_config(), config) ---@type SpotConf
-  job.area = ui.Pos({ 'center', w = config.style.size.width, h = config.style.size.height }) ---@diagnostic disable-line: assign-type-mismatch
-  ya.spot_table(job, self:render_table(job, extra, config)) ---@diagnostic disable-line: undefined-field
+
+  local ui_table, table_height, table_width = self:render_table(job, extra, config)
+  local area_height = config.style.size.height
+  if config.style.size.auto_resize_height then
+    area_height = math.max(table_height + 2, config.style.size.min_height) -- +2 due to border
+    area_height = math.min(area_height, config.style.size.max_height)
+  end
+
+  local area_width = config.style.size.width
+  if config.style.size.auto_resize_width then
+    area_width = math.max(table_width + 2, config.style.size.min_width) -- +2 due to border
+    area_width = math.min(area_width, config.style.size.max_width)
+  end
+
+  job.area = ui.Pos({ 'center', w = area_width, h = area_height }) ---@diagnostic disable-line: assign-type-mismatch
+  ui_table:area(job.area)
+  ya.spot_table(job, ui_table) ---@diagnostic disable-line: undefined-field
 end
 
 return M
