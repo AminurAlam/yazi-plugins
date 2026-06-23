@@ -19,18 +19,25 @@ local get_config = ya.sync(function(st)
         time_format = '%Y-%m-%d %H:%M', -- https://www.man7.org/linux/man-pages/man3/strftime.3.html
         show_compression = true, ---@type boolean
       },
+
       plugins_section = {
         enable = true,
       },
+
       style = {
-        section = 'green',
-        key = 'reset',
-        value = 'blue',
-        selected = 'blue',
-        colorize_metadata = true,
-        height = 20,
-        width = 60,
-        key_length = 15,
+        color = {
+          metadata = true,
+          title = 'green',
+          key = 'reset',
+          value = 'blue',
+          selected = 'blue',
+        },
+
+        size = {
+          height = 20,
+          width = 60,
+          key_length = 15,
+        },
       },
     }
 end)
@@ -48,7 +55,7 @@ local permission = function(file, config)
     return ui.Text('couldnt get permissions')
   end
 
-  if not config.style.colorize_metadata then
+  if not config.style.color.metadata then
     return perm
   end
 
@@ -87,7 +94,7 @@ local hash = function(file, config)
     ui.Style():fg('yellow'),
   }
 
-  local cmd = Command(config.metadata_section.hash_cmd):arg { file.name }
+  local cmd = Command(config.metadata_section.hash_cmd):arg({ file.name })
 
   local output, err = cmd:output()
   if not output then
@@ -96,7 +103,7 @@ local hash = function(file, config)
 
   local sum = output.stdout:sub(1, -#file.name - 3)
 
-  if not config.style.colorize_metadata then
+  if not config.style.color.metadata then
     return ui.Text(sum)
   end
   local spans = {}
@@ -212,20 +219,19 @@ function M:render_table(job, extra, config)
       rows[#rows + 1] = ui.Row({}) ---@diagnostic disable-line: undefined-field
     end
 
-    rows[#rows + 1] = ui.Row({ section.title or 'No title' })
-      :style(ui.Style():fg(config.style.section))
+    rows[#rows + 1] = ui.Row({ section.title or 'No title' }):style(ui.Style():fg(config.style.color.title))
 
     for _, row in ipairs(section) do
       -- label_max_length = math.max(#row[2], label_max_length)
 
       local key = row[1]
       if type(row[1]) == 'string' then
-        key = ui.Line('  ' .. row[1]):style(ui.Style():fg(config.style.key))
+        key = ui.Line('  ' .. row[1]):style(ui.Style():fg(config.style.color.key))
       end
 
       local val = row[2]
       if type(row[2]) == 'string' then
-        val = ui.Line(row[2]):style(ui.Style():fg(config.style.value))
+        val = ui.Line(row[2]):style(ui.Style():fg(config.style.color.value))
       end
 
       rows[#rows + 1] = ui.Row({ key, val })
@@ -260,7 +266,7 @@ function M:render_table(job, extra, config)
 
   -- Metadata
   if config.metadata_section.enable then
-    add_section {
+    add_section({
       title = 'Metadata',
       { 'Mimetype', job.mime },
       { 'Size', size }, -- TODO: update modeline with size
@@ -269,7 +275,7 @@ function M:render_table(job, extra, config)
       { 'Modified', fileTimestamp(job.file, 'mtime', config) },
       { 'Accessed', fileTimestamp(job.file, 'atime', config) },
       hashrow,
-    }
+    })
   end
 
   -- Extras
@@ -287,13 +293,13 @@ function M:render_table(job, extra, config)
       ya.dbg(text)
       return text:sub(1, -3)
     end
-    add_section {
+    add_section({
       title = 'Plugins',
       { 'Spotter', get_plugin('spotters') },
       { 'Previewer', get_plugin('previewers') },
       { 'Fetchers', get_plugin('fetchers') },
       { 'Preloaders', get_plugin('preloaders') },
-    }
+    })
   end
 
   return ui
@@ -302,10 +308,10 @@ function M:render_table(job, extra, config)
     :row(1)
     :col(1)
     :widths({
-      ui.Constraint.Length(config.style.key_length),
+      ui.Constraint.Length(config.style.size.key_length),
       ui.Constraint.Fill(1),
     })
-    :cell_style(ui.Style():fg(config.style.selected):reverse())
+    :cell_style(ui.Style():fg(config.style.color.selected):reverse())
   -- :col_style(styles.row_value)
 end
 
@@ -314,7 +320,7 @@ end
 ---@param config SpotConf
 function M:spot(job, extra, config)
   config = tbl_strict_extend(get_config(), config) ---@type SpotConf
-  job.area = ui.Pos({ 'center', w = config.style.width, h = config.style.height }) ---@diagnostic disable-line: assign-type-mismatch
+  job.area = ui.Pos({ 'center', w = config.style.size.width, h = config.style.size.height }) ---@diagnostic disable-line: assign-type-mismatch
   ya.spot_table(job, self:render_table(job, extra, config)) ---@diagnostic disable-line: undefined-field
 end
 
