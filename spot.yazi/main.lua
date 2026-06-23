@@ -38,6 +38,12 @@ local get_config = ya.sync(function(st)
           width = 60,
           key_length = 15,
         },
+
+        padding = {
+          -- vertical = 5,
+          horizontal = 1,
+          key = 2,
+        },
       },
     }
 end)
@@ -210,7 +216,38 @@ end
 ---@param config SpotConf
 ---@return Renderable
 function M:render_table(job, extra, config)
+  -- Constructed only one time
   local rows = {}
+
+  local hpad = config.style.padding.horizontal
+  -- local vpad = config.style.padding.vertical
+  local kpad = config.style.padding.key
+
+  local key_prefix = (' '):rep(kpad)
+
+  local title_style = ui.Style():fg(config.style.color.title)
+  local key_style = ui.Style():fg(config.style.color.key)
+  local value_style = ui.Style():fg(config.style.color.value)
+  local selected_style = ui.Style():fg(config.style.color.selected):reverse()
+
+  local widths = {
+    ui.Constraint.Length(hpad),
+    ui.Constraint.Length(config.style.size.key_length + kpad),
+    ui.Constraint.Fill(1),
+    ui.Constraint.Length(hpad),
+  }
+
+  ---@param value string|Renderable
+  ---@param prefix string|nil
+  ---@param cell_style ui.Style
+  ---@return Renderable
+  local function styled_cell(value, prefix, cell_style)
+    if type(value) ~= 'string' then
+      return value
+    end
+
+    return ui.Line((prefix or '') .. value):style(cell_style)
+  end
 
   -- TODO: render multiline if '\n' is present
   ---@param section Section
@@ -219,22 +256,22 @@ function M:render_table(job, extra, config)
       rows[#rows + 1] = ui.Row({}) ---@diagnostic disable-line: undefined-field
     end
 
-    rows[#rows + 1] = ui.Row({ section.title or 'No title' }):style(ui.Style():fg(config.style.color.title))
+    rows[#rows + 1] = ui.Row({
+      '',
+      ui.Line(section.title or 'No title'):style(title_style),
+      '',
+      '',
+    })
 
     for _, row in ipairs(section) do
-      -- label_max_length = math.max(#row[2], label_max_length)
-
-      local key = row[1]
-      if type(row[1]) == 'string' then
-        key = ui.Line('  ' .. row[1]):style(ui.Style():fg(config.style.color.key))
+      if row ~= nil then
+        rows[#rows + 1] = ui.Row({
+          '',
+          styled_cell(row[1], key_prefix, key_style),
+          styled_cell(row[2], nil, value_style),
+          '',
+        })
       end
-
-      local val = row[2]
-      if type(row[2]) == 'string' then
-        val = ui.Line(row[2]):style(ui.Style():fg(config.style.color.value))
-      end
-
-      rows[#rows + 1] = ui.Row({ key, val })
     end
   end
 
@@ -306,12 +343,9 @@ function M:render_table(job, extra, config)
     .Table(rows) ---@diagnostic disable-line: undefined-field
     :area(job.area) ---@diagnostic disable-line: undefined-field
     :row(1)
-    :col(1)
-    :widths({
-      ui.Constraint.Length(config.style.size.key_length),
-      ui.Constraint.Fill(1),
-    })
-    :cell_style(ui.Style():fg(config.style.color.selected):reverse())
+    :col(2)
+    :widths(widths)
+    :cell_style(selected_style)
   -- :col_style(styles.row_value)
 end
 

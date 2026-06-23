@@ -60,6 +60,10 @@ require("spot"):setup({
 			width = 65,
 			key_length = 15,
 		},
+        padding = {
++          horizontal = 1,
++          key = 2,
++        },
 	},
 })
 ```
