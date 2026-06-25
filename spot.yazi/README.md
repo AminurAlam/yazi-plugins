@@ -36,44 +36,42 @@ in `~/.config/yazi/init.lua`
 
 ```lua
 require("spot"):setup({
-	metadata_section = {
-		enable = true,
-		hash_cmd = "xxhsum", -- other hashing commands may be slower
-		hash_filesize_limit = 500, -- in MB, set 0 to disable
-		relative_time = true, -- 2026-01-01 or n days ago
-		time_format = "%Y-%m-%d %H:%M", -- https://www.man7.org/linux/man-pages/man3/strftime.3.html
-		show_compression = true, ---@type boolean
-	},
-	plugins_section = {
-		enable = true,
-	},
-	style = {
-		color = {
-			metadata = true,
-			title = "green",
-			key = "reset",
-			value = "blue",
-			selected = "yellow",
-		},
-        size = {
-            height = 20, -- unused when auto_resize is set to true
-            width = 60, -- unused when auto_resize is set to true
-
-            auto_resize_width = true,
-            min_width = 30,
-            max_width = 80,
-
-            auto_resize_height = true,
-            min_height = 10,
-            max_height = 50,
-
-            key_length = 15,
-        },
-        padding = {
-+          horizontal = 1,
-+          key = 2,
-+        },
-	},
+  metadata_section = {
+    enable = true,
+    hash_cmd = 'xxhsum', -- other hashing commands may be slower
+    hash_filesize_limit = 150, -- in MB, set 0 to disable
+    relative_time = true, -- 2026-01-01 or n days ago
+    time_format = '%Y-%m-%d %H:%M', -- https://www.man7.org/linux/man-pages/man3/strftime.3.html
+    show_compression = true, ---@type boolean
+  },
+  plugins_section = {
+    enable = true,
+  },
+  style = {
+    color = {
+      metadata = true,
+      title = 'green',
+      key = 'reset',
+      value = 'blue',
+      selected = 'blue',
+    },
+    size = {
+      height = 20, -- unused when auto_resize is set to true
+      width = 60, -- unused when auto_resize is set to true
+      auto_resize_width = true,
+      min_width = 30,
+      max_width = 80,
+      auto_resize_height = true,
+      min_height = 10,
+      max_height = 50,
+      key_length = 15,
+    },
+    padding = {
+      -- vertical = 1,
+      horizontal = 1,
+      key = 2,
+    },
+  },
 })
 ```
 

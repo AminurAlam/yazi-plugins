@@ -19,11 +19,9 @@ local get_config = ya.sync(function(st)
         time_format = '%Y-%m-%d %H:%M', -- https://www.man7.org/linux/man-pages/man3/strftime.3.html
         show_compression = true, ---@type boolean
       },
-
       plugins_section = {
         enable = true,
       },
-
       style = {
         color = {
           metadata = true,
@@ -32,27 +30,18 @@ local get_config = ya.sync(function(st)
           value = 'blue',
           selected = 'blue',
         },
-
         size = {
           height = 20, -- unused when auto_resize is set to true
           width = 60, -- unused when auto_resize is set to true
-
           auto_resize_width = true,
-          min_width = 30,
+          min_width = 60,
           max_width = 80,
-
           auto_resize_height = true,
-          min_height = 10,
-          max_height = 50,
-
-          key_length = 15,
+          min_height = 20,
+          max_height = 40,
         },
-
-        padding = {
-          -- vertical = 1,
-          horizontal = 1,
-          key = 2,
-        },
+        max_key_length = 15,
+        key_indent_size = 2,
       },
     }
 end)
@@ -227,28 +216,13 @@ end
 ---@return integer
 ---@return integer
 function M:render_table(job, extra, config)
-  -- Constructed only one time
   local rows = {}
-
-  local horizontal_pad = config.style.padding.horizontal
-  -- local vpad = config.style.padding.vertical
-  local key_pad = config.style.padding.key
-
-  local key_prefix = (' '):rep(key_pad)
-
+  local key_pad = config.style.key_indent_size
   local title_style = ui.Style():fg(config.style.color.title)
   local key_style = ui.Style():fg(config.style.color.key)
   local value_style = ui.Style():fg(config.style.color.value)
   local selected_style = ui.Style():fg(config.style.color.selected):reverse()
-
-  local widths = {
-    ui.Constraint.Length(horizontal_pad),
-    ui.Constraint.Length(config.style.size.key_length + key_pad),
-    ui.Constraint.Fill(1),
-    ui.Constraint.Length(horizontal_pad),
-  }
-
-  local min_width = config.style.size.key_length + key_pad + (2 * horizontal_pad)
+  local min_width = config.style.max_key_length + key_pad
   local max_width = min_width
 
   ---@param value string|Renderable
@@ -264,33 +238,30 @@ function M:render_table(job, extra, config)
   end
 
   -- TODO: render multiline if '\n' is present
+  -- TODO: break lines if it exceeds window width
   ---@param section Section
   local add_section = function(section)
     if #rows ~= 0 then
       rows[#rows + 1] = ui.Row({}) ---@diagnostic disable-line: undefined-field
     end
 
-    rows[#rows + 1] = ui.Row({
-      '',
-      ui.Line(section.title or 'No title'):style(title_style),
-      '',
-      '',
-    })
+    rows[#rows + 1] = ui.Row({ ui.Line(section.title or 'No title'):style(title_style) })
 
     for _, row in ipairs(section) do
-      if row ~= nil then
-        rows[#rows + 1] = ui.Row({
-          '',
-          styled_cell(row[1], key_prefix, key_style),
-          styled_cell(row[2], nil, value_style),
-          '',
-        })
-
-        local row_width = min_width + (type(row[2]) == 'string' and #row[2] or 0)
-        if row_width > max_width then
-          max_width = row_width
-        end
+      if not row then
+        goto continue
       end
+      rows[#rows + 1] = ui.Row({
+        styled_cell(row[1], (' '):rep(key_pad), key_style),
+        styled_cell(row[2], nil, value_style),
+      })
+
+      local row_width = min_width + (type(row[2]) == 'string' and #row[2] or 0)
+      if row_width > max_width then
+        max_width = row_width
+      end
+
+      ::continue::
     end
   end
 
@@ -365,7 +336,7 @@ function M:render_table(job, extra, config)
     .Table(rows) ---@diagnostic disable-line: undefined-field
     :row(1)
     :col(2)
-    :widths(widths)
+    -- :widths(widths)
     :cell_style(selected_style),
     table_height,
     table_width
