@@ -33,14 +33,13 @@ local get_config = ya.sync(function(st)
         size = {
           height = 20, -- unused when auto_resize is set to true
           width = 60, -- unused when auto_resize is set to true
-          auto_resize_width = true,
+          auto_resize = true,
           min_width = 60,
           max_width = 80,
-          auto_resize_height = true,
           min_height = 20,
           max_height = 40,
         },
-        max_key_length = 15,
+        max_key_length = 25,
         key_indent_size = 2,
       },
     }
@@ -213,28 +212,21 @@ end
 ---@param extra table
 ---@param config SpotConf
 ---@return Renderable
----@return integer
----@return integer
 function M:render_table(job, extra, config)
   local rows = {}
   local key_pad = config.style.key_indent_size
-  local title_style = ui.Style():fg(config.style.color.title)
-  local key_style = ui.Style():fg(config.style.color.key)
-  local value_style = ui.Style():fg(config.style.color.value)
-  local selected_style = ui.Style():fg(config.style.color.selected):reverse()
-  local min_width = config.style.max_key_length + key_pad
-  local max_width = min_width
+  local key_width = 0
+  local val_width = 0
 
-  ---@param value string|Renderable
-  ---@param prefix string|nil
-  ---@param cell_style ui.Style
+  ---@param cell string|Renderable
+  ---@param cell_style AsColor
+  ---@param prefix string?
   ---@return Renderable
-  local function styled_cell(value, prefix, cell_style)
-    if type(value) ~= 'string' then
-      return value
+  local function styled_cell(cell, cell_style, prefix)
+    if type(cell) == 'string' then
+      return ui.Line((prefix or '') .. cell):style(ui.Style():fg(cell_style))
     end
-
-    return ui.Line((prefix or '') .. value):style(cell_style)
+    return cell
   end
 
   -- TODO: render multiline if '\n' is present
@@ -245,21 +237,27 @@ function M:render_table(job, extra, config)
       rows[#rows + 1] = ui.Row({}) ---@diagnostic disable-line: undefined-field
     end
 
-    rows[#rows + 1] = ui.Row({ ui.Line(section.title or 'No title'):style(title_style) })
+    rows[#rows + 1] = ui.Row({
+      ui.Line(section.title or 'No title'):style(ui.Style():fg(config.style.color.title)),
+    })
 
     for _, row in ipairs(section) do
       if not row then
         goto continue
       end
+      local key, val = row[1], row[2]
+      if not key or not val then
+        goto continue
+      end
       rows[#rows + 1] = ui.Row({
-        styled_cell(row[1], (' '):rep(key_pad), key_style),
-        styled_cell(row[2], nil, value_style),
+        styled_cell(key, config.style.color.key, (' '):rep(key_pad)),
+        styled_cell(val, config.style.color.value),
       })
 
-      local row_width = min_width + (type(row[2]) == 'string' and #row[2] or 0)
-      if row_width > max_width then
-        max_width = row_width
-      end
+      key_width = math.max(key_width, type(key) == 'string' and #key or 0)
+      val_width = math.max(val_width, type(val) == 'string' and #val or 0)
+
+      -- ya.dbg(key, val, #key, key_width)
 
       ::continue::
     end
@@ -293,7 +291,7 @@ function M:render_table(job, extra, config)
 
   -- Metadata
   if config.metadata_section.enable then
-    add_section({
+    add_section {
       title = 'Metadata',
       { 'Mimetype', job.mime },
       { 'Size', size }, -- TODO: update modeline with size
@@ -302,7 +300,7 @@ function M:render_table(job, extra, config)
       { 'Modified', fileTimestamp(job.file, 'mtime', config) },
       { 'Accessed', fileTimestamp(job.file, 'atime', config) },
       hashrow,
-    })
+    }
   end
 
   -- Extras
@@ -317,30 +315,39 @@ function M:render_table(job, extra, config)
       for _, plugin in pairs(rt.plugin[type]:match({ mime = job.mime, file = job.file })) do
         text = text .. plugin.name .. ', '
       end
-      ya.dbg(text)
+      -- ya.dbg(text)
       return text:sub(1, -3)
     end
-    add_section({
+    add_section {
       title = 'Plugins',
       { 'Spotter', get_plugin('spotters') },
       { 'Previewer', get_plugin('previewers') },
       { 'Fetchers', get_plugin('fetchers') },
       { 'Preloaders', get_plugin('preloaders') },
-    })
+    }
   end
 
-  local table_height = #rows
-  local table_width = max_width
+  key_width = math.min(config.style.max_key_length, key_pad + key_width)
+  local conf_size = config.style.size
 
   return ui
     .Table(rows) ---@diagnostic disable-line: undefined-field
+    :area(ui.Pos {
+      'center',
+      w = conf_size.auto_resize
+          and ya.clamp(conf_size.min_width, key_width + val_width + 4, conf_size.max_width)
+        or conf_size.width,
+      h = conf_size.auto_resize
+          and ya.clamp(conf_size.min_height, #rows + 2, conf_size.max_height)
+        or conf_size.height,
+    })
     :row(1)
     :col(2)
-    -- :widths(widths)
-    :cell_style(selected_style),
-    table_height,
-    table_width
-  -- :col_style(styles.row_value)
+    :widths({
+      ui.Constraint.Length(key_width + 1),
+      ui.Constraint.Fill(1),
+    })
+    :cell_style(ui.Style():fg(config.style.color.selected):reverse())
 end
 
 ---@param job Job
@@ -348,23 +355,7 @@ end
 ---@param config SpotConf
 function M:spot(job, extra, config)
   config = tbl_strict_extend(get_config(), config) ---@type SpotConf
-
-  local ui_table, table_height, table_width = self:render_table(job, extra, config)
-  local area_height = config.style.size.height
-  if config.style.size.auto_resize_height then
-    area_height = math.max(table_height + 2, config.style.size.min_height) -- +2 due to border
-    area_height = math.min(area_height, config.style.size.max_height)
-  end
-
-  local area_width = config.style.size.width
-  if config.style.size.auto_resize_width then
-    area_width = math.max(table_width + 2, config.style.size.min_width) -- +2 due to border
-    area_width = math.min(area_width, config.style.size.max_width)
-  end
-
-  job.area = ui.Pos({ 'center', w = area_width, h = area_height }) ---@diagnostic disable-line: assign-type-mismatch
-  ui_table:area(job.area)
-  ya.spot_table(job, ui_table) ---@diagnostic disable-line: undefined-field
+  ya.spot_table(job, self:render_table(job, extra, config)) ---@diagnostic disable-line: undefined-field
 end
 
 return M

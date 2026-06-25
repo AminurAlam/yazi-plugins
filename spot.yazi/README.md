@@ -35,7 +35,7 @@ prepend_spotters = [
 in `~/.config/yazi/init.lua`
 
 ```lua
-require("spot"):setup({
+require('spot'):setup {
   metadata_section = {
     enable = true,
     hash_cmd = 'xxhsum', -- other hashing commands may be slower
@@ -58,21 +58,16 @@ require("spot"):setup({
     size = {
       height = 20, -- unused when auto_resize is set to true
       width = 60, -- unused when auto_resize is set to true
-      auto_resize_width = true,
-      min_width = 30,
+      auto_resize = true,
+      min_width = 60,
       max_width = 80,
-      auto_resize_height = true,
-      min_height = 10,
-      max_height = 50,
-      key_length = 15,
+      min_height = 20,
+      max_height = 40,
     },
-    padding = {
-      -- vertical = 1,
-      horizontal = 1,
-      key = 2,
-    },
+    max_key_length = 25,
+    key_indent_size = 2,
   },
-})
+}
 ```
 
 # Footnote
