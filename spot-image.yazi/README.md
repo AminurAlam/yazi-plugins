@@ -13,7 +13,7 @@ ya pkg add AminurAlam/yazi-plugins:spot AminurAlam/yazi-plugins:spot-image
 # Dependencies
 
 - [spot.yazi](/spot.yazi) - backend plugin
-- [exiv2](https://repology.org/project/exiv2/versions) - for getting exif data
+- [exiftool](https://repology.org/project/exiftool/versions) - for getting exif data
 
 # Usage
 

@@ -1,60 +1,116 @@
 local M = {}
 
+---@param section Section
+---@param key string
+---@param value string|table
+local function add_field(section, key, value)
+  if value == nil or value == '' or value == 'None' or value == 'Unknown' then
+    return
+  end
+  if type(value) == 'table' then
+    table.insert(section, { key, table.concat(value, ', ') })
+  elseif type(value) == 'string' then
+    table.insert(section, { key, value })
+  end
+end
+
 ---@param job Job
 ---@return Sections?
----@return integer?
-local image_exif = function(job)
-  local output, err = Command('exiv2'):arg({ '-PElt', tostring(job.file.url) }):output()
+local image_exiftool = function(job)
+  local output, err = Command('exiftool'):arg({ '-j', tostring(job.file.url) }):output()
 
   if not output or err then
-    ya.err('Failed to start `exiv2`: ', tostring(err))
+    ya.err('Failed to start `exiftool`: ', tostring(err))
     return
   elseif not output.status.success then
     ya.err(output.stderr)
     return
-  elseif output.stdout == '' then
+  end
+
+  local json = ya.json_decode(output.stdout)
+  if not json then
+    ya.err('Failed to decode `exiftool` output: ', output.stdout)
+    return
+  elseif type(json) ~= 'table' then
+    ya.err('Invalid `exiftool` output: ', output.stdout)
     return
   end
 
-  local data, key_len = { title = 'EXIF' }, 0
-  for line in output.stdout:gmatch('[^\n]+') do
-    local s, e = line:find(' %s+')
-    if not s or not e then
+  json = json[1]
+  ya.dbg(json)
+
+  local data = { title = 'EXIF' }
+  local pinned_keys = {
+    'FileType',
+    'ImageSize',
+    'CreateDate',
+    'DateTimeOriginal',
+    'ColorType',
+    'ColorSpaceData',
+    'YCbCrSubSampling',
+    'ColorComponents',
+    'BitDepth',
+    'BitsPerSample',
+  }
+  local exclude = { -- TODO: let user exclude more keys
+    FileAccessDate = true,
+    FileInodeChangeDate = true,
+    FileModifyDate = true,
+    FileName = true,
+    FilePermissions = true,
+    FileSize = true,
+    FileTypeExtension = true,
+    Directory = true,
+    ImageHeight = true,
+    SourceFile = true,
+    MIMEType = true,
+    ImageWidth = true,
+    ExifToolVersion = true,
+
+    ChromaticAdaptation = true,
+    HDRGainCurve = true,
+    MPImage2 = true,
+    ModifyDate = true,
+    PixelUnits = true,
+    PixelsPerUnitX = true,
+    PixelsPerUnitY = true,
+    ThumbnailImage = true,
+    XResolution = true,
+    YResolution = true,
+
+    BlueMatrixColumn = true,
+    BlueTRC = true,
+    BlueX = true,
+    BlueY = true,
+    GreenMatrixColumn = true,
+    GreenTRC = true,
+    GreenX = true,
+    GreenY = true,
+    RedMatrixColumn = true,
+    RedTRC = true,
+    RedX = true,
+    RedY = true,
+  }
+
+  for _, key in ipairs(pinned_keys) do
+    add_field(data, key, json[key])
+    exclude[key] = true
+  end
+
+  for key, val in pairs(json) do
+    if exclude[key] then
       goto continue
     end
-    if s > key_len then
-      key_len = s
-    end
-    data[#data + 1] = { line:sub(0, s - 1), line:sub(e + 1, #line) }
+    add_field(data, key, val)
     ::continue::
   end
 
-  return data, key_len
+  return { data }
 end
 
 ---@param job Job
 function M:spot(job)
-  local sections = {}
-  local info = ya.image_info(job.file.url)
-  local exif, key_len = image_exif(job)
-
-  if info then
-    sections[#sections + 1] = {
-      title = 'Image',
-      { 'Format', tostring(info.format) },
-      { 'Size', string.format('%dx%d', info.w, info.h) },
-      { 'Color', tostring(info.color) },
-    }
-  end
-  if exif then
-    sections[#sections + 1] = exif
-  end
-
-  require('spot'):spot(job, sections, {
-    style = {
-      key_length = key_len and ya.clamp(0, key_len, 25),
-    },
-  })
+  require('spot'):spot(job, image_exiftool(job))
 end
 
 return M

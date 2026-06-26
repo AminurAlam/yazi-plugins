@@ -337,8 +337,7 @@ function M:render_table(job, extra, config)
       w = conf_size.auto_resize
           and ya.clamp(conf_size.min_width, key_width + val_width + 4, conf_size.max_width)
         or conf_size.width,
-      h = conf_size.auto_resize
-          and ya.clamp(conf_size.min_height, #rows + 2, conf_size.max_height)
+      h = conf_size.auto_resize and ya.clamp(conf_size.min_height, #rows + 2, conf_size.max_height)
         or conf_size.height,
     })
     :row(1)
