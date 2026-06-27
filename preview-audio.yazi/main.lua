@@ -4,21 +4,20 @@ local M = {}
 
 ---@param lines string[]
 ---@param key string
----@param value string
+---@param value nil|string|table
 local function add_line(lines, key, value)
-  if value and value ~= '' then
-    table.insert(lines, string.format('%s: %s', key, value))
+  if value == nil or value == '' or value == 'None' or value == 'Unknown' then
+    return
   end
+
+  if type(value) == 'table' then
+    value = table.concat(value, ', ')
+  end
+
+  table.insert(lines, string.format('%s: %s', key, value))
 end
 
----@param value any
----@return string
-local function join_tag(value)
-  if type(value) == 'table' then
-    return table.concat(value, ' / ')
-  end
-  return value or ''
-end
+-- sep
 
 ---@param items table
 ---@return string?
@@ -50,27 +49,25 @@ local audio_exiftool = function(file)
   elseif type(json) ~= 'table' then
     return { Err('Invalid `exiftool` output: %s', output.stdout) }
   end
+
   -- ya.dbg(json)
 
   local tags = json[1] or {}
-
   local data = {} ---@type string[]
-  local artist = join_tag(tags.Artist)
-  local title = tags.Title
-  local album = tags.Album
-  local genre = join_tag(tags.Genre)
+  local artist = tags.Artist or '[unknown]'
+  if type(artist) == 'table' then
+    artist = table.concat(artist, ', ')
+  end
   -- TODO: uniq instead of first
   local date = first({ tags.Originaldate, tags.Date, tags.DateTimeOriginal })
-  local duration = tags.Duration
   local cover = tags.PictureType or ''
   if tags.PictureWidth and tags.PictureHeight then
     cover = string.format('%s %sx%s', cover, tags.PictureWidth, tags.PictureHeight)
   end
 
-  table.insert(data, artist .. ' - ' .. title)
-  add_line(data, 'Album', album)
-  add_line(data, 'Genre', genre)
-  add_line(data, 'Duration', duration)
+  table.insert(data, artist .. ' - ' .. (tags.Title or '[untitled]'))
+  add_line(data, 'Album', tags.Album)
+  add_line(data, 'Genre', tags.Genre)
   add_line(data, 'Date', date)
   add_line(data, 'Cover', cover)
 
@@ -82,6 +79,7 @@ local audio_exiftool = function(file)
 
   table.insert(data, '')
   table.insert(data, '# spec')
+  add_line(data, 'Duration', tags.Duration)
   add_line(data, 'Format', first({ tags.AudioFormat, tags.FileType }))
   add_line(data, 'Sample Rate', sr)
   add_line(data, 'Bit Depth', (bd and (bd .. ' bit')))
