@@ -1,4 +1,4 @@
---- @since 25.5.31
+--- @since 26.8.15
 
 local M = {}
 
@@ -23,14 +23,9 @@ local get_config = ya.sync(function(st)
       skip_symbols = true,
       -- if {"yazi-"}: f -> file, yazi-file
       skip_prefix = {},
-      -- default search location
-      -- start: f -> file
-      -- ext:   f -> name.fs
-      -- word:  f -> file, also-file
-      -- all:   f -> file, also-file, twofile, elf
-      search_location = 'start',
       fallback = true,
       aliases = {},
+      keys = {},
     }
 end)
 
@@ -50,10 +45,19 @@ end
 ---@type fun(self, config: FCharConf): nil
 function M:setup(config)
   set_config(tbl_deep_extend(get_config(), config))
+
+  local opts = get_config()
+  for action, key in pairs(opts.keys) do
+    km.mgr.rules:insert(1, { on = key, run = 'plugin fchar ' .. action })
+  end
 end
 
 ---@param job Job
 function M:entry(job)
+  if not job.args[1] then
+    ya.err('type of search not specified')
+  end
+
   local cands = {
     { on = '0' },
     { on = '1' },
@@ -119,9 +123,6 @@ function M:entry(job)
     { on = 'Y' },
     { on = 'Z' },
   }
-  if job.args[1] then
-    set_config(tbl_deep_extend(get_config(), { search_location = job.args[1] }))
-  end
   local opts = get_config()
 
   if opts.skip_symbols then
@@ -149,8 +150,8 @@ function M:entry(job)
     prefixes = prefixes .. '(' .. prefix .. ')?'
   end
 
-  local re = loc[opts.search_location]
-    .. ((opts.search_location == 'start' and opts.skip_symbols) and [[\W?]] or '')
+  local re = loc[job.args[1]]
+    .. ((job.args[1] == 'start' and opts.skip_symbols) and [[\W?]] or '')
     .. prefixes
     .. '['
     .. cands[idx].on

@@ -15,23 +15,6 @@ ya pkg add AminurAlam/yazi-plugins:fchar
 
 # Usage
 
-in `~/.config/yazi/keymap.toml`
-
-```toml
-# fchar [start|ext|word|all]
-#   start: f -> file
-#   ext:   f -> name.ext
-#   word:  f -> file, also-file
-#   all:   f -> file, also-file, twofile, elf
-[mgr]
-prepend_keymap = [
-  { on = "f",     run = "plugin fchar start", desc = "Jump to first char in filename" },
-  { on = "e",     run = "plugin fchar ext",   desc = "Jump to first char in extension" },
-  { on = "F",     run = "plugin fchar word",  desc = "Jump to first char in a word" },
-  { on = "<C-f>", run = "plugin fchar all",   desc = "Jump to char anywhere in filename" },
-]
-```
-
 in `~/.config/yazi/init.lua`
 
 ```lua
@@ -43,13 +26,18 @@ require('fchar'):setup {
   skip_symbols = true,
   -- if {"yazi-"}: f -> file, yazi-file
   skip_prefix = {},
-  -- default search location
-  -- start: f -> file
-  -- ext:   f -> name.fs
-  -- word:  f -> file, also-file
-  -- all:   f -> file, also-file, twofile, elf
-  search_location = 'start', ---@type "start"|"ext"|"word"|"all"
   aliases = {},
+  keys = {},
+}
+
+-- setup keymaps
+require('fchar'):setup {
+  keys = {
+    start = 'f',   --  ff -> file
+    ext = 'e',     --  ef -> name.fs
+    word = 'F',    --  Ff -> file, also-file
+    all = '<C-f>', -- ^ff -> file, also-file, twofile, elf
+  },
 }
 
 -- aliases for German
