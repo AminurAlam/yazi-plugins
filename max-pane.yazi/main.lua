@@ -7,25 +7,28 @@
 ---@return boolean
 local function eq(other)
   local r = rt.mgr.ratio
-  return other[1] == r.current and other[2] == r.preview
+  return other[1] == r[2] and other[2] == r[3]
 end
 
-local function entry()
-  -- TODO: toggle between given states instead of hardcoded paths
-  -- local states = {
-  --   { 0, 1, 1 },
-  --   { 0, 1, 0 },
-  --   { 0, 0, 1 },
-  -- }
-  if eq { 1, 1 } then
-    rt.mgr.ratio = { 0, 1, 0 }
-  elseif eq { 1, 0 } then
-    rt.mgr.ratio = { 0, 0, 1 }
-  else
-    rt.mgr.ratio = { 0, 1, 1 }
-  end
+return {
+  entry = function()
+    -- TODO: toggle between given states instead of hardcoded paths
+    -- local states = {
+    --   { 0, 1, 1 },
+    --   { 0, 1, 0 },
+    --   { 0, 0, 1 },
+    -- }
+    if eq { 1, 1 } then
+      rt.mgr.ratio = { 0, 1, 0 }
+    elseif eq { 1, 0 } then
+      rt.mgr.ratio = { 0, 0, 1 }
+    else
+      rt.mgr.ratio = { 0, 1, 1 }
+    end
 
-  ya.emit('app:resize', {})
-end
-
-return { entry = entry }
+    ya.emit('app:resize', {})
+  end,
+  setup = function(key)
+    km.mgr.rules:insert(1, { on = key, run = 'plugin max-pane' })
+  end,
+}
