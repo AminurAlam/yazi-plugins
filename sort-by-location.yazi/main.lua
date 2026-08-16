@@ -43,6 +43,12 @@ end
 ---@param config SortConf
 function M:setup(config)
   set_config(tbl_deep_extend(get_config(), config))
+
+  local opts = get_config()
+  for action, key in pairs(opts.keys or {}) do
+    km.mgr.rules:insert(1, { on = key, run = 'plugin sort-by-location ' .. action })
+  end
+
   ps.sub('ind-sort', function()
     return find_match(get_config()) ---@diagnostic disable-line: redundant-return-value
   end)

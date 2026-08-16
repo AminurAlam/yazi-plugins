@@ -34,8 +34,14 @@ File = File
 
 ---@class th
 
+-- keys
+---@alias Key string|string[]
+
+-- imgdir.yazi
+---@alias ImgDirConf { width: integer, height: integer }
+
 -- fchar.yazi
----@alias FCharConf { insensitive: boolean, skip_symbols: boolean, skip_prefix: string[], search_location: "start"|"ext"|"word"|"all", aliases: table<string, string> }
+---@alias FCharConf { insensitive: boolean, skip_symbols: boolean, skip_prefix: string[], search_location: "start"|"ext"|"word"|"all", aliases: table<string, string>, keys: {start: Key?, ext: Key?, word: Key?, all: Key?} }
 
 -- spot.yazi
 ---@alias SpotConf_plug { enable: boolean }
@@ -46,8 +52,9 @@ File = File
 ---@alias SpotConf { plugins_section: SpotConf_plug, metadata_section: SpotConf_meta, style: SpotConf_style }
 
 ---@alias Section { title: string }|table<number, table<string, Renderable>>
----@alias Sections table<number, Section>
+---@alias Sections Section[]
 
 -- sort-by-location.yazi
----@alias SortTable { by: "none"|"mtime"|"btime"|"extension"|"alphabetical"|"natural"|"size"|"random", reverse: boolean }
----@alias SortConf table<integer, {pattern: string, sort: SortTable}>|table<"default", SortTable>
+---@alias SortTypes "none"|"mtime"|"btime"|"extension"|"alphabetical"|"natural"|"size"|"random"
+---@alias SortTable { by: SortTypes, reverse: boolean }
+---@alias SortConf table<integer, {pattern: string, sort: SortTable}>|{default: SortTable, keys: table<SortTypes, Key>}
