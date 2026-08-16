@@ -1,4 +1,4 @@
---- @since 25.12.29
+--- @since 26.8.15
 
 --- @sync entry
 
@@ -6,6 +6,11 @@
 -- TODO: select all files with same extension
 
 return {
+  ---@param keys {fwd: Key, bwd: Key}
+  setup = function(keys)
+    km.mgr.rules:insert(1, { on = keys.bwd or '{', run = 'plugin nextension bwd' })
+    km.mgr.rules:insert(1, { on = keys.fwd or '}', run = 'plugin nextension fwd' })
+  end,
   ---@param job Job
   entry = function(_, job)
     local get_ext = function(file) ---@param file fs__File

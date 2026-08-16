@@ -10,15 +10,11 @@ ya pkg add AminurAlam/yazi-plugins:nextension
 
 # Usage
 
-in `~/.config/yazi/keymap.toml`
+in `~/.config/yazi/init.lua`
 
-```toml
-# nextension [fwd|bwd]
-[mgr]
-prepend_keymap = [
-  { on = "{", run = "plugin nextension bwd" },
-  { on = "}", run = "plugin nextension fwd" },
-]
+```lua
+-- this is optional, use this if you want to change the default bindings
+require('nextension'):setup { fwd = '}', bwd = '{' }
 ```
 
 in `~/.config/yazi/yazi.toml`
