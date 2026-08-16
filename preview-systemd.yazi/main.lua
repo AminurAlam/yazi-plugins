@@ -1,7 +1,5 @@
 local M = {}
 
--- TODO: add other init systems
-
 ---@param job Job
 function M:peek(job)
   local parent = tostring(job.file.url.parent.name)
@@ -14,30 +12,21 @@ function M:peek(job)
     '--' .. parent,
     'status',
     '--no-pager',
+    '-n30',
+    '-o',
+    'cat',
     tostring(job.file.name),
   }):output()
 
-  local out
-  if not output then
-    out = { Err('Failed to start `systemctl`: %s', err) }
+  local text = ''
+  if err then
+    text = string.format('Failed to start `systemctl`: %s', err)
+  elseif not output then
+    text = string.format('Failed to start `systemctl`: %s', err)
   else
-    out = {}
-    local skip = job.skip
-    for i in output.stdout:gmatch('[^\n]+') do
-      if skip < 1 then
-        out[#out + 1] = i
-      else
-        skip = skip - 1
-      end
-      if #out > job.area.h then
-        break
-      end
-    end
-    if #out < job.area.h then
-      ya.emit('peek', { job.skip - 1, only_if = job.file.url, upper_bound = true })
-    end
+    text = output.stdout
   end
-  ya.preview_widget(job, ui.List(out):area(job.area))
+  ya.preview_widget(job, ui.Text.parse(text):area(job.area))
 end
 
 function M:seek(job)
