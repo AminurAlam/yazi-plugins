@@ -1,5 +1,4 @@
 --- @since 26.8.15
-
 --- @sync entry
 
 -- TODO: jump to file with matching stem with `*`

@@ -15,8 +15,7 @@ local function add_field(section, key, value)
   table.insert(section, { key, tostring(value) })
 end
 
--- sep
-
+-- TODO: inline
 ---@param data Sections
 ---@param section Section
 local function add_section(data, section)

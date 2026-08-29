@@ -17,8 +17,6 @@ local function add_line(lines, key, value)
   table.insert(lines, string.format('%s: %s', key, value))
 end
 
--- sep
-
 ---@param items table
 ---@return string?
 local function first(items)
