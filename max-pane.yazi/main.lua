@@ -28,7 +28,7 @@ return {
 
     ya.emit('app:resize', {})
   end,
-  setup = function(key)
+  setup = function(_, key)
     km.mgr.rules:insert(1, { on = key, run = 'plugin max-pane' })
   end,
 }
