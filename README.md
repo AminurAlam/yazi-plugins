@@ -37,3 +37,4 @@
 - [max-pane.yazi](max-pane.yazi) - maximize panes
 - [preview-imgdir.yazi](preview-imgdir.yazi)
 - [state.yazi](state.yazi)
+- [pivot-or-open.yazi](pivot-or-open.yazi)
