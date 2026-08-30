@@ -10,7 +10,15 @@ ya pkg add AminurAlam/yazi-plugins:preview-epub
 
 # Dependencies
 
+Install at least one of:
+
 - [gnome-epub-thumbnailer](https://repology.org/project/gnome-epub-thumbnailer/versions)
+  — renders a thumbnail from the cover art or the first page. Linux-only.
+- [Calibre](https://calibre-ebook.com/) (`ebook-meta`) — extracts the cover
+  image only. Cross-platform (Linux, macOS, Windows).
+
+The plugin checks which is installed at runtime and uses it automatically,
+preferring `gnome-epub-thumbnailer` when present.
 
 # Usage
 
@@ -26,3 +34,11 @@ prepend_preloaders = [
   { mime = '', run = 'preview-epub' },
 ]
 ```
+
+# How it works
+
+Which backend gets used is decided at runtime, then remembered for the rest of
+the session:
+
+1. `gnome-epub-thumbnailer -s 0 <file.epub> <cache>` — thumbnail (cover or first page)
+2. `ebook-meta --get-cover <cache> <file.epub>` — cover image only
