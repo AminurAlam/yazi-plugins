@@ -1,12 +1,11 @@
 local M = {}
 
--- Backend availability, checked once per session.
-local ok = {}
-local check_exists = function(bin) return Command(bin):arg('-V'):output() ~= nil end
+local tool
 
---- Extract cover with gnome-epub-thumbnailer.
---- @param job Job @param cache Url @return Error?
-function M:_gnome(job, cache)
+---@param job Job
+---@param cache Url
+---@return Error?
+local gnome = function(job, cache)
   local output, err = Command('gnome-epub-thumbnailer'):arg({
     '-s',
     '0',
@@ -21,9 +20,10 @@ function M:_gnome(job, cache)
   end
 end
 
---- Extract cover with Calibre's ebook-meta.
---- @param job Job @param cache Url @return Error?
-function M:_calibre(job, cache)
+---@param job Job
+---@param cache Url
+---@return Error?
+local calibre = function(job, cache)
   local output, err = Command('ebook-meta'):arg({
     '--get-cover',
     tostring(cache),
@@ -67,19 +67,24 @@ function M:preload(job)
     return
   end
 
-  -- TODO: use something better that can get all images inside the epub
-  for _, spec in ipairs({
-    { 'gnome',   'gnome-epub-thumbnailer', '_gnome' },
-    { 'calibre', 'ebook-meta',             '_calibre' },
-  }) do
-    local name, bin, method = spec[1], spec[2], spec[3]
-    if ok[name] == nil then ok[name] = check_exists(bin) end
-    if ok[name] then
-      return self[method](self, job, cache)
+  if tool == nil then
+    for _, bin in ipairs({ 'gnome-epub-thumbnailer', 'ebook-meta' }) do
+      local out = Command(bin):arg('--version'):output()
+      if out ~= nil then
+        tool = bin
+      end
     end
+    ya.dbg('using: ' .. (tool or ''))
   end
 
-  return Err('No epub thumbnailer found. Install either `gnome-epub-thumbnailer` or Calibre (`ebook-meta`).')
+  -- TODO: use something better that can get all images inside the epub
+  if tool == 'gnome-epub-thumbnailer' then
+    return gnome(job, cache)
+  elseif tool == 'ebook-meta' then
+    return calibre(job, cache)
+  else
+    return Err 'No epub thumbnailer found. Install either `gnome-epub-thumbnailer` or Calibre (`ebook-meta`).'
+  end
 end
 
 return M
