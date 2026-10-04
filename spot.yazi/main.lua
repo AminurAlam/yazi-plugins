@@ -119,28 +119,34 @@ local hash = function(file, config)
 end
 
 ---@param file File
----@param type "atime"|"btime"|"mtime"
+---@param time_type "atime"|"btime"|"mtime"
 ---@param config SpotConf
 ---@return string
-local fileTimestamp = function(file, type, config)
+local fileTimestamp = function(file, time_type, config)
   local file = file ---@diagnostic disable-line: redefined-local
   if not file or file.cha.is_link then
     return ''
   end
 
-  local time = math.floor(file.cha[type] or 0)
-  local delta = os.time() - time
+  local time = file.cha[time_type]
 
-  if time == 0 then
+  if not time then
     return ''
+  elseif type(time) == 'userdata' then
+    ---@diagnostic disable-next-line: undefined-field
+    time = math.floor(time.unix)
+  else
+    time = math.floor(time)
   end
+
+  local delta = os.time() - time
 
   if delta < (3600 * 24 * 7) and config.metadata_section.relative_time then
     local relative_format = ''
     if delta < 60 then
       relative_format = delta .. 's ago'
     elseif delta < 3600 then
-      relative_format = (delta // 60) .. ' m ago'
+      relative_format = (delta // 60) .. 'm ago'
     elseif delta < (3600 * 24) then
       relative_format = (delta // 3600) .. 'h ago'
     else

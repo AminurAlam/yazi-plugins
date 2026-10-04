@@ -6,6 +6,9 @@
 ---@type File
 File = File
 
+---@class Time
+---@field unix number
+
 ---@class Job
 ---@field file File
 ---@field skip number
