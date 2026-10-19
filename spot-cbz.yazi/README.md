@@ -16,7 +16,8 @@ ya pkg add AminurAlam/yazi-plugins:spot AminurAlam/yazi-plugins:spot-cbz
 in `~/.config/yazi/yazi.toml`
 
 ```toml
-plugin.prepend_spotters = [
+[plugin]
+prepend_spotters = [
   { url = '*.cb{z,r}', run = 'spot-cbz' },
 ]
 ```

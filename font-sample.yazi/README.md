@@ -36,12 +36,15 @@ ya pkg add AminurAlam/yazi-plugins:font-sample
 in `~/.config/yazi/yazi.toml`
 
 ```toml
-plugin.prepend_previewers = [
+[plugin]
+prepend_previewers = [
   { mime = 'font/*', run = 'font-sample' },
   { mime = 'application/ms-opentype', run = 'font-sample' },
   { url = '*.{otf,ttf,woff,woff2}', run = 'font-sample' },
 ]
-plugin.prepend_preloaders = [
+
+[plugin]
+prepend_preloaders = [
   { mime = 'font/*', run = 'font-sample' },
   { mime = 'application/ms-opentype', run = 'font-sample' },
   { url = '*.{otf,ttf,woff,woff2}', run = 'font-sample' },

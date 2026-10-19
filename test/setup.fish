@@ -7,7 +7,7 @@ function dbg
     if [ "$PWD" = /home/fisher/repos/yazi-fork ]
         set -f yazi /home/fisher/repos/yazi-fork/target/debug/yazi
     else
-        set -f yazi yazi
+        set -f yazi (command -v yazi)
     end
     YAZI_LOG=debug $yazi $argv # 2>/dev/null
     and clear

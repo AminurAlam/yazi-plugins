@@ -18,11 +18,13 @@ ya pkg add AminurAlam/yazi-plugins:preview-cbz
 in `~/.config/yazi/yazi.toml`
 
 ```toml
-plugin.prepend_previewers = [
+[plugin]
+prepend_previewers = [
   { url = '*.cb{z,r}', run = 'preview-cbz' },
 ]
 
-plugin.prepend_preloaders = [
+[plugin]
+prepend_preloaders = [
   { url = '*.cb{z,r}', run = 'preview-cbz' },
 ]
 ```
