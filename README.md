@@ -35,6 +35,6 @@
 - [fselect.yazi](fselect.yazi)
 - [last-visual.yazi](last-visual.yazi)
 - [max-pane.yazi](max-pane.yazi) - maximize panes
-- [preview-imgdir.yazi](preview-imgdir.yazi)
+- [preview-imgdir.yazi](preview-imgdir.yazi) - preview directory that contains images as a grid of images
 - [state.yazi](state.yazi)
 - [pivot-or-open.yazi](pivot-or-open.yazi)

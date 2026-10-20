@@ -1,5 +1,45 @@
 local M = {}
 
+local set_config = ya.sync(function(st, opts)
+  st.opts = opts
+end)
+
+local get_config = ya.sync(function(st)
+  return st.opts
+    or {
+      cols = 2,
+      rows = 3,
+      width = 480,
+      height = 480,
+      background = '#fff',
+    }
+end)
+
+local function tbl_strict_extend(default, config)
+  if type(default) ~= type(config) then
+    return default
+  end
+  if type(default) ~= 'table' then
+    if config ~= nil then
+      return config
+    else
+      return default
+    end
+  end
+
+  for key, _ in pairs(default) do
+    default[key] = tbl_strict_extend(default[key], config[key])
+  end
+
+  return default
+end
+
+function M:setup(config)
+  set_config(tbl_strict_extend(get_config(), config))
+end
+
+-----------------------------------------------------------------------------------
+
 ---@param job Job
 function M:_native_peek(job)
   local start = os.clock()
@@ -25,6 +65,8 @@ end
 function M:_native_preload(job)
   return fs.read_dir(job.file.url, { glob = '*.{jpg,png}', limit = 3 }) or {}
 end
+
+-----------------------------------------------------------------------------------
 
 ---@param job Job
 function M:peek(job)
@@ -52,15 +94,10 @@ function M:preload(job)
   if not cache or fs.cha(cache) then
     return
   end
-  local config = {
-    cols = 2,
-    rows = 3,
-    width = 480,
-    height = 480,
-    background = '#fff',
-  }
 
-  local size = config.cols * config.rows
+  local opts = get_config()
+  local size = opts.cols * opts.rows
+  -- TODO: sort by mtime
   local files = fs.read_dir(job.file.url, { glob = '*.{jpg,png}', limit = size })
   if not files or #files ~= size then
     return Err('incompatible files')
@@ -74,11 +111,11 @@ function M:preload(job)
     :arg(fnames)
     :arg({
       '-tile',
-      config.cols .. 'x' .. config.rows,
+      opts.cols .. 'x' .. opts.rows,
       '-geometry',
-      config.width .. 'x' .. config.height .. '+0+0',
+      opts.width .. 'x' .. opts.height .. '+0+0',
       '-background',
-      config.background,
+      opts.background,
       'JPG:' .. tostring(cache),
     })
     :output()
