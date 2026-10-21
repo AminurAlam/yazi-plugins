@@ -2,11 +2,11 @@ local M = {}
 
 ---@param job Job
 function M:peek(job)
-  local output, err = Command('{{}}'):arg({ tostring(job.file.url) }):output()
+  local output, err = Command(''):arg({ tostring(job.file.url) }):output()
 
   local out
   if not output then
-    out = { Err('Failed to start `{{}}`: %s', err) }
+    out = { Err('Failed to start ``: %s', err) }
   elseif not output.status.success then
     out = { Err('stderr: %s', output.stderr) }
   else

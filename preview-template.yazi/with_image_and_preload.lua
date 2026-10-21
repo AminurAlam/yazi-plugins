@@ -7,6 +7,7 @@ function M:peek(job)
     return
   end
 
+  -------------------- {{ with seeks limits
   local err, bound = self:preload(job)
   if bound and bound > 0 then
     ya.emit('peek', { bound - 1, only_if = job.file.url, upper_bound = true })
@@ -15,14 +16,20 @@ function M:peek(job)
     ya.preview_widget(job, err)
     return
   end
+  -------------------- }} {{ without seek limits
+  local ok, err = self:preload(job)
+  if not ok or err then
+    return
+  end
+  -------------------- }}
 
   ya.sleep(math.max(0, rt.preview.image_delay / 1000 + start - os.clock()))
 
-  ---@diagnostic disable-next-line: redefined-local
   local _, err = ya.image_show(cache, job.area)
   ya.preview_widget(job, err)
 end
 
+---@param job Job
 function M:seek(job)
   local h = cx.active.current.hovered
   if h and h.url == job.file.url then
@@ -32,32 +39,28 @@ function M:seek(job)
 end
 
 ---@param job Job
----@return Error?
----@return integer?
 function M:preload(job)
   local cache = ya.file_cache(job)
   if not cache or fs.cha(cache) then
     return
   end
 
+  -------------------- {{ with seeks limits
   if job.skip == -1 then
     return nil, 0
   end
+  -------------------- }}
 
   local output, err = Command(''):arg({
-    tostring(job.skip + 1),
     tostring(job.file.url),
     tostring(cache),
+    tostring(job.skip + 1),
   }):output()
 
   if not output or err then
     return Err('Failed to start ``: %s', err)
   elseif not output.status.success then
     return Err('stderr: %s', output.stderr)
-  end
-
-  if job.skip > 0 and checker then
-    return Err('command did not create any file'), job.skip
   end
 end
 

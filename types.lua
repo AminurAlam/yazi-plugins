@@ -35,13 +35,21 @@ File = File
 ---@class (exact) fs
 ---@field calc_size fun(url: Url): integer
 
+---@class (exact) rt
+---@field plugin { fetchers: plugin, spotters: plugin, previewers: plugin, preloaders: plugin }
+
+---@class (exact) plugin
+---@field insert fun(self, id: integer, table)
+---@field match fun()
+---@field remove fun(self, matcher: { id: integer })
+
 ---@class th
 
 -- keys
 ---@alias Key string|string[]
 
 -- imgdir.yazi
----@alias ImgDirConf { width: integer, height: integer }
+---@alias ImgDirConf { cols: integer, rows: integer, width: integer, height: integer, background: string, patterns: string[] }
 
 -- fchar.yazi
 ---@alias FCharConf { insensitive: boolean, skip_symbols: boolean, skip_prefix: string[], search_location: "start"|"ext"|"word"|"all", aliases: table<string, string>, keys: {start: Key?, ext: Key?, word: Key?, all: Key?} }

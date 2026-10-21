@@ -1,13 +1,19 @@
 local M = {}
 
+---@type fun(opts: table) nil
 local set_config = ya.sync(function(st, opts)
   st.opts = opts
 end)
 
+---@type fun() table
 local get_config = ya.sync(function(st)
   return st.opts or {}
 end)
 
+---@generic T
+---@param default any
+---@param config T
+---@return T
 local function tbl_deep_extend(default, config)
   if type(config) ~= 'table' then
     return config
@@ -21,6 +27,10 @@ local function tbl_deep_extend(default, config)
   return default
 end
 
+---@generic T
+---@param default T
+---@param config any
+---@return T
 local function tbl_strict_extend(default, config)
   if type(default) ~= type(config) then
     return default
@@ -41,51 +51,13 @@ local function tbl_strict_extend(default, config)
 end
 
 function M:setup(config)
-  set_config(tbl_deep_extend(get_config(), config))
+  set_config(tbl_strict_extend(get_config(), config))
+  set_config(tbl_deep_extend(get_config(), { key = config.key }))
 end
 
-function M:peek(job)
-  local start, cache = os.clock(), ya.file_cache(job)
-  if not cache then
-    return
-  end
+-- TODO: on key call
+function M:enter(job) end
 
-  local ok, err = self:preload(job)
-  if not ok or err then
-    return
-  end
-
-  ya.sleep(math.max(0, rt.preview.image_delay / 1000 + start - os.clock()))
-
-  local _, err = ya.image_show(cache, job.area)
-  ya.preview_widget(job, err and ui.Text(err):area(job.area):wrap(ui.Wrap.YES))
-end
-
-function M:seek(job) end
-
-function M:preload(job)
-  local cache = ya.file_cache(job)
-  if not cache or fs.cha(cache) then
-    return true
-  end
-
-  local output, err = Command(''):arg({
-    tostring(job.file.url),
-    tostring(cache),
-    job.skip + 1,
-  }):output()
-
-  if not output then
-    return true, Err('Failed to start ``, error: %s', err)
-  elseif not output.status.success then
-    return true, Err('Failed to get image, stderr: %s', output.stderr)
-  end
-
-  return true
-end
-
-function M:spot(job)
-  require('spot'):spot(job, { { title = 'Something' } })
-end
+-- TODO: move to functional-template.yazi/
 
 return M
