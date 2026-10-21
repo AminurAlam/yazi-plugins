@@ -100,6 +100,11 @@ function M:peek(job)
     ya.dbg(tostring(err)) -- TODO: fix random Failed to rename error
   end
 
+  if job.mime == 'application/apple.mpegurl' or job.mime == 'audio/mpegurl' then
+    require('code'):peek(job)
+    return
+  end
+
   ya.sleep(math.max(0, rt.preview.image_delay / 1000 + start - os.clock()))
   local img_area, err = ya.image_show(cache, job.area)
   if err then
@@ -132,6 +137,10 @@ function M:preload(job)
 
   local cha = fs.cha(cache)
   if cha and cha.len > 0 then
+    return
+  end
+
+  if job.mime == 'application/apple.mpegurl' or job.mime == 'audio/mpegurl' then
     return
   end
 
