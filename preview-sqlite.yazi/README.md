@@ -14,12 +14,8 @@ ya pkg add AminurAlam/yazi-plugins:preview-sqlite
 
 # Usage
 
-in `~/.config/yazi/yazi.toml`
+in `~/.config/yazi/init.lua`
 
-```toml
-[plugin]
-prepend_previewers = [
-  { url = '*.sqlite3', run = 'preview-sqlite' },
-  { mime = 'application/sqlite3', run = 'preview-sqlite' },
-]
+```lua
+require('preview-sqlite').setup()
 ```

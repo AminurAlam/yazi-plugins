@@ -167,4 +167,13 @@ function M:preload(job)
   end
 end
 
+---@param mu { mimes: string[], urls: string[] }
+function M:setup(mu)
+  mu = mu or { urls = { '*.{cbz,cbr}' } }
+  for _, url in ipairs(mu.urls or {}) do
+    rt.plugin.previewers:insert(1, { url = url, run = 'preview-cbz' })
+    rt.plugin.preloaders:insert(1, { url = url, run = 'preview-cbz' })
+  end
+end
+
 return M

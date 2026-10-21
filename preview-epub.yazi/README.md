@@ -15,15 +15,8 @@ ya pkg add AminurAlam/yazi-plugins:preview-epub
 
 # Usage
 
-in `~/.config/yazi/yazi.toml`
+in `~/.config/yazi/init.lua`
 
-```toml
-[plugin]
-prepend_previewers = [
-  { mime = '', run = 'preview-epub' },
-]
-
-prepend_preloaders = [
-  { mime = '', run = 'preview-epub' },
-]
+```lua
+require('preview-epub'):setup()
 ```

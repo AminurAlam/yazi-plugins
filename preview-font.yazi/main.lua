@@ -12,6 +12,8 @@ local get_config = ya.sync(function(st)
       font_size = 80,
       fg = 'black',
       bg = 'white',
+      mimes = { 'font/*' },
+      urls = { '*.{otf,ttf,woff,woff2}' },
     }
 end)
 
@@ -21,6 +23,15 @@ function M:setup(config)
     default[k] = config[k] or v
   end
   set_config(default)
+
+  for _, mime in ipairs(default.mimes or {}) do
+    rt.plugin.previewers:insert(1, { mime = mime, run = 'preview-xxx' })
+    rt.plugin.preloaders:insert(1, { mime = mime, run = 'preview-xxx' })
+  end
+  for _, url in ipairs(default.urls or {}) do
+    rt.plugin.previewers:insert(1, { url = url, run = 'preview-xxx' })
+    rt.plugin.preloaders:insert(1, { url = url, run = 'preview-xxx' })
+  end
 end
 
 function M:peek(job)

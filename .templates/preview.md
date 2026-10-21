@@ -16,17 +16,8 @@ ya pkg add AminurAlam/yazi-plugins:preview-template
 
 # Usage
 
-in `~/.config/yazi/yazi.toml`
+in `~/.config/yazi/init.lua`
 
-```toml
-[plugin]
-prepend_previewers = [
-  { url = '', run = 'preview-template' },
-  { mime = '', run = 'preview-template' },
-]
-
-prepend_preloaders = [
-  { url = '', run = 'preview-template' },
-  { mime = '', run = 'preview-template' },
-]
+```lua
+require('preview-xxx').setup()
 ```

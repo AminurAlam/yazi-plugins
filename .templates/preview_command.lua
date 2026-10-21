@@ -44,4 +44,15 @@ function M:seek(job)
   })
 end
 
+---@param mu { mimes: string[], urls: string[] }
+function M:setup(mu)
+  mu = mu or { mimes = {}, urls = {} }
+  for _, mime in ipairs(mu.mimes or {}) do
+    rt.plugin.previewers:insert(1, { mime = mime, run = 'preview-xxx' })
+  end
+  for _, url in ipairs(mu.urls or {}) do
+    rt.plugin.previewers:insert(1, { url = url, run = 'preview-xxx' })
+  end
+end
+
 return M

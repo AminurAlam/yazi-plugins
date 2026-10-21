@@ -14,15 +14,8 @@ ya pkg add AminurAlam/yazi-plugins:preview-typst
 
 # Usage
 
-in `~/.config/yazi/yazi.toml`
+in `~/.config/yazi/init.lua`
 
-```toml
-[plugin]
-prepend_previewers = [
-  { url = '*.typ', run = 'preview-typst' },
-]
-
-prepend_preloaders = [
-  { url = '*.typ', run = 'preview-typst' },
-]
+```lua
+require('preview-typst').setup()
 ```

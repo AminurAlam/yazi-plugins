@@ -12,11 +12,8 @@ ya pkg add AminurAlam/yazi-plugins:preview-systemd
 
 # Usage
 
-in `~/.config/yazi/yazi.toml`
+in `~/.config/yazi/init.lua`
 
-```toml
-[plugin]
-prepend_previewers = [
-  { url = "*.service", run = "preview-systemd" },
-]
+```lua
+require('preview-systemd').setup()
 ```

@@ -14,11 +14,8 @@ ya pkg add AminurAlam/yazi-plugins:preview-git
 
 # Usage
 
-in `~/.config/yazi/yazi.toml`
+in `~/.config/yazi/init.lua`
 
-```toml
-[plugin]
-prepend_previewers = [
-  { url = '**/.git/', run = 'preview-git' },
-]
+```lua
+require('preview-git'):setup()
 ```

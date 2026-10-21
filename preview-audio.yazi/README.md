@@ -12,16 +12,8 @@ ya pkg add AminurAlam/yazi-plugins:preview-audio
 
 # Usage
 
-in `~/.config/yazi/yazi.toml`
+in `~/.config/yazi/init.lua`
 
-```toml
-[plugin]
-prepend_previewers = [
-  { mime = 'audio/mpegurl', run = 'code' }, # ignore .m3u files
-  { mime = 'audio/*', run = 'preview-audio' },
-]
-prepend_preloaders = [
-  { mime = 'audio/mpegurl', run = 'code' }, # ignore .m3u files
-  { mime = 'audio/*', run = 'preview-audio' },
-]
+```lua
+require('preview-audio'):setup()
 ```

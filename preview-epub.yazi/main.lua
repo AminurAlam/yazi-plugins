@@ -87,4 +87,17 @@ function M:preload(job)
   end
 end
 
+---@param mu { mimes: string[], urls: string[] }
+function M:setup(mu)
+  mu = mu or { mimes = { 'application/epub+zip' }, urls = {} }
+  for _, mime in ipairs(mu.mimes or {}) do
+    rt.plugin.previewers:insert(1, { mime = mime, run = 'preview-epub' })
+    rt.plugin.preloaders:insert(1, { mime = mime, run = 'preview-epub' })
+  end
+  for _, url in ipairs(mu.urls or {}) do
+    rt.plugin.previewers:insert(1, { url = url, run = 'preview-epub' })
+    rt.plugin.preloaders:insert(1, { url = url, run = 'preview-epub' })
+  end
+end
+
 return M

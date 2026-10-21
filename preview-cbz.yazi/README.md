@@ -15,16 +15,23 @@ ya pkg add AminurAlam/yazi-plugins:preview-cbz
 
 # Usage
 
-in `~/.config/yazi/yazi.toml`
+in `~/.config/yazi/init.lua`
 
-```toml
-[plugin]
-prepend_previewers = [
-  { url = '*.cb{z,r}', run = 'preview-cbz' },
-]
+```lua
+require('preview-cbz'):setup()
 
-[plugin]
-prepend_preloaders = [
-  { url = '*.cb{z,r}', run = 'preview-cbz' },
-]
+-- or if you would like to preview
+-- other kinds of file
+require('preview-cbz'):setup({
+  urls = {
+    '*.{cbz,cbr}',
+    '**/Documents/*.{zip,rar}',
+    '**/manga/**/*.{zip,rar}',
+  },
+})
+
+-- note that this previewer only works
+-- for files ending with cbz/cbr/zip/rar.
+-- if you want to use some other extension
+-- with this plugin please create a new issue
 ```

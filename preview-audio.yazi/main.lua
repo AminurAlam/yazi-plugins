@@ -172,4 +172,17 @@ function M:preload(job)
   end
 end
 
+---@param mu { mimes: string[], urls: string[] }
+function M:setup(mu)
+  mu = mu or { mimes = { 'audio/*' }, urls = {} }
+  for _, mime in ipairs(mu.mimes or {}) do
+    rt.plugin.previewers:insert(1, { mime = mime, run = 'preview-audio' })
+    rt.plugin.preloaders:insert(1, { mime = mime, run = 'preview-audio' })
+  end
+  for _, url in ipairs(mu.urls or {}) do
+    rt.plugin.previewers:insert(1, { url = url, run = 'preview-audio' })
+    rt.plugin.preloaders:insert(1, { url = url, run = 'preview-audio' })
+  end
+end
+
 return M

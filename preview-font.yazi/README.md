@@ -33,34 +33,19 @@ ya pkg add AminurAlam/yazi-plugins:font-sample
 
 # Usage
 
-in `~/.config/yazi/yazi.toml`
-
-```toml
-[plugin]
-prepend_previewers = [
-  { mime = 'font/*', run = 'font-sample' },
-  { mime = 'application/ms-opentype', run = 'font-sample' },
-  { url = '*.{otf,ttf,woff,woff2}', run = 'font-sample' },
-]
-
-[plugin]
-prepend_preloaders = [
-  { mime = 'font/*', run = 'font-sample' },
-  { mime = 'application/ms-opentype', run = 'font-sample' },
-  { url = '*.{otf,ttf,woff,woff2}', run = 'font-sample' },
-]
-```
-
 in `~/.config/yazi/init.lua`
 
 ```lua
 -- default config
-require('font-sample'):setup {
+require('preview-font'):setup({
   text = 'ABCDEF abcdef\n0123456789 \noO08 iIlL1 g9qCGQ\n8%& <([{}])>\n.,;: @#$-_="\n== <= >= != ffi\nâéùïøçÃĒÆœ\n및개요これ直楽糸',
   canvas_size = '750x800',
   font_size = 80,
   -- https://imagemagick.org/script/color.php
   bg = 'white',
   fg = 'black',
-}
+  -- mimes and urls on which this previewer is run
+  mimes = { 'font/*' },
+  urls = { '*.{otf,ttf,woff,woff2}' },
+})
 ```

@@ -58,6 +58,12 @@ end
 function M:setup(config)
   set_config(tbl_extend(get_config(), config))
 
+  local config = get_config()
+  for _, url in ipairs(config.patterns or {}) do
+    rt.plugin.previewers:insert(1, { url = url, run = 'preview-imgdir' })
+    rt.plugin.preloaders:insert(1, { url = url, run = 'preview-imgdir' })
+  end
+end
 
 ---@param job Job
 function M:_native_peek(job)

@@ -14,15 +14,8 @@ ya pkg add AminurAlam/yazi-plugins:preview-imgdir
 
 # Usage
 
-in `~/.config/yazi/yazi.toml`
+in `~/.config/yazi/init.lua`
 
-```toml
-[plugin]
-prepend_previewers = [
-  { url = '/home/user/Pictures/*/', run = 'preview-imgdir' },
-]
-
-prepend_preloaders = [
-  { url = '/home/user/Pictures/*/', run = 'preview-imgdir' },
-]
+```lua
+require('preview-imgdir').setup()
 ```

@@ -26,4 +26,15 @@ end
 
 function M:seek() end
 
+---@param mu { mimes: string[], urls: string[] }
+function M:setup(mu)
+  mu = mu or { mimes = {}, urls = { '**/.git/' } }
+  for _, mime in ipairs(mu.mimes or {}) do
+    rt.plugin.previewers:insert(1, { mime = mime, run = 'preview-git' })
+  end
+  for _, url in ipairs(mu.urls or {}) do
+    rt.plugin.previewers:insert(1, { url = url, run = 'preview-git' })
+  end
+end
+
 return M

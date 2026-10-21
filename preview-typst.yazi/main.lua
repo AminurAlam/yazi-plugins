@@ -78,4 +78,17 @@ function M:preload(job)
   end
 end
 
+---@param mu { mimes: string[], urls: string[] }
+function M:setup(mu)
+  mu = mu or { mimes = {}, urls = { '*.typ' } }
+  for _, mime in ipairs(mu.mimes or {}) do
+    rt.plugin.previewers:insert(1, { mime = mime, run = 'preview-typst' })
+    rt.plugin.preloaders:insert(1, { mime = mime, run = 'preview-typst' })
+  end
+  for _, url in ipairs(mu.urls or {}) do
+    rt.plugin.previewers:insert(1, { url = url, run = 'preview-typst' })
+    rt.plugin.preloaders:insert(1, { url = url, run = 'preview-typst' })
+  end
+end
+
 return M
