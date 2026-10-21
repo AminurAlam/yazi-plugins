@@ -1,5 +1,6 @@
 /README_.md
-/test/*
+/.test/*
+!/.test/setup.fish
 
 /git.yazi
 /mime-ext.yazi

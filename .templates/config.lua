@@ -56,7 +56,7 @@ function M:setup(config)
 end
 
 -- TODO: on key call
-function M:enter(job) end
+function M:entery(job) end
 
 -- TODO: move to functional-template.yazi/
 
