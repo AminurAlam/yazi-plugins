@@ -2,9 +2,10 @@
 
 local M = {}
 
-local changed = ya.sync(function(st, new)
-  local b = st.last ~= new
-  st.last = new
+---@type fun(query: string) bool
+local changed = ya.sync(function(st, query)
+  local b = st.last ~= query
+  st.last = query
   return b or not cx.active.finder
 end)
 
@@ -23,28 +24,50 @@ local get_config = ya.sync(function(st)
       skip_symbols = true,
       -- if {"yazi-"}: f -> file, yazi-file
       skip_prefix = {},
-      fallback = true,
       aliases = {},
       keys = {},
     }
 end)
 
-local function tbl_deep_extend(default, config)
-  if type(config) ~= 'table' then
-    return config
+--- merge configs overwriting `LEFT` with `RIGHT`
+--- unless `LEFT` is an empty table
+---@generic T
+---@param default T
+---@param config any
+---@return T
+local function tbl_extend(default, config)
+  if type(default) ~= type(config) then
+    return default
   end
 
-  default = (type(default) == 'table') and default or {}
-  for key, _ in pairs(config) do
-    default[key] = tbl_deep_extend(default[key], config[key])
+  if type(default) ~= 'table' then
+    if config ~= nil then
+      return config
+    else
+      return default
+    end
+  end
+
+  local count = 0
+  for key, _ in pairs(default) do
+    default[key] = tbl_extend(default[key], config[key])
+    count = count + 1
+  end
+
+  -- the left table was empty so we
+  -- probably always want the right table
+  if count == 0 then
+    return config
   end
 
   return default
 end
 
+----------------------------------------------------------------------
+
 ---@type fun(self, config: FCharConf): nil
 function M:setup(config)
-  set_config(tbl_deep_extend(get_config(), config))
+  set_config(tbl_extend(get_config(), config))
 
   local opts = get_config()
   for action, key in pairs(opts.keys) do
@@ -158,7 +181,6 @@ function M:entry(job)
     .. (opts.aliases[cands[idx].on] or '')
     .. ']'
 
-  -- TODO: fallback to word/all if no match was found
   if changed(re) then
     ya.emit('find_do', { re, insensitive = opts.insensitive })
   else

@@ -15,27 +15,12 @@ local get_config = ya.sync(function(st)
     }
 end)
 
-local function tbl_strict_extend(default, config)
-  if type(default) ~= type(config) then
-    return default
-  end
-  if type(default) ~= 'table' then
-    if config ~= nil then
-      return config
-    else
-      return default
-    end
-  end
-
-  for key, _ in pairs(default) do
-    default[key] = tbl_strict_extend(default[key], config[key])
-  end
-
-  return default
-end
-
 function M:setup(config)
-  set_config(tbl_strict_extend(get_config(), config))
+  local default = get_config()
+  for k, v in pairs(default) do
+    default[k] = config[k] or v
+  end
+  set_config(default)
 end
 
 function M:peek(job)

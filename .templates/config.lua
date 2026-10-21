@@ -10,31 +10,17 @@ local get_config = ya.sync(function(st)
   return st.opts or {}
 end)
 
----@generic T
----@param default any
----@param config T
----@return T
-local function tbl_deep_extend(default, config)
-  if type(config) ~= 'table' then
-    return config
-  end
-
-  default = (type(default) == 'table') and default or {}
-  for key, _ in pairs(config) do
-    default[key] = tbl_deep_extend(default[key], config[key])
-  end
-
-  return default
-end
-
+--- merge configs overwriting `LEFT` with `RIGHT`
+--- unless `LEFT` is an empty table
 ---@generic T
 ---@param default T
 ---@param config any
 ---@return T
-local function tbl_strict_extend(default, config)
+local function tbl_extend(default, config)
   if type(default) ~= type(config) then
     return default
   end
+
   if type(default) ~= 'table' then
     if config ~= nil then
       return config
@@ -43,21 +29,29 @@ local function tbl_strict_extend(default, config)
     end
   end
 
+  local count = 0
   for key, _ in pairs(default) do
-    default[key] = tbl_strict_extend(default[key], config[key])
+    default[key] = tbl_extend(default[key], config[key])
+    count = count + 1
+  end
+
+  -- the left table was empty so we
+  -- probably always want the right table
+  if count == 0 then
+    return config
   end
 
   return default
 end
 
+----------------------------------------------------------------------
+
+---@param config any
 function M:setup(config)
-  set_config(tbl_strict_extend(get_config(), config))
-  set_config(tbl_deep_extend(get_config(), { key = config.key }))
+  set_config(tbl_extend(get_config(), config))
+
+  local config = get_config()
+  -- do something with config
 end
-
--- TODO: on key call
-function M:entery(job) end
-
--- TODO: move to functional-template.yazi/
 
 return M

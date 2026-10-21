@@ -52,7 +52,7 @@ File = File
 ---@alias ImgDirConf { cols: integer, rows: integer, width: integer, height: integer, background: string, patterns: string[] }
 
 -- fchar.yazi
----@alias FCharConf { insensitive: boolean, skip_symbols: boolean, skip_prefix: string[], search_location: "start"|"ext"|"word"|"all", aliases: table<string, string>, keys: {start: Key?, ext: Key?, word: Key?, all: Key?} }
+---@alias FCharConf { insensitive: boolean, skip_symbols: boolean, skip_prefix: string[], aliases: table<string, string>, keys: {start: Key?, ext: Key?, word: Key?, all: Key?} }
 
 -- spot.yazi
 ---@alias SpotConf_plug { enable: boolean }
