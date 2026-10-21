@@ -40,7 +40,7 @@ File = File
 
 ---@class (exact) plugin
 ---@field insert fun(self, id: integer, table)
----@field match fun()
+---@field match fun(self, query: table?) table
 ---@field remove fun(self, matcher: { id: integer })
 
 ---@class th
