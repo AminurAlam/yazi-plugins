@@ -7,20 +7,18 @@
 - [spot-video.yazi](spot-video.yazi) - video metadata
 - [spot-image.yazi](spot-image.yazi) - image metadata and EXIF
 - [spot-cbz.yazi](spot-cbz.yazi) - comic books that have ComicInfo.xml
-- [spot-template.yazi](spot-template.yazi) - example plugin using spot.yazi
 
 ## previewers
 
-- [font-sample.yazi](font-sample.yazi) - common font features at a glance
 - [preview-audio.yazi](preview-audio.yazi) - cover art and metadata of audio files
 - [preview-cbz.yazi](preview-cbz.yazi) - comic books and manga
 - [preview-epub.yazi](preview-epub.yazi) - cover of `.epub` files
+- [preview-font.yazi](preview-font.yazi) - common font features at a glance
 - [preview-git.yazi](preview-git.yazi) - showing git info by hovering over `.git/` directory
 - [preview-sqlite.yazi](preview-sqlite.yazi) - schema of a sqlite database
 - [preview-systemd.yazi](preview-systemd.yazi) - running status of systemd units
 - [preview-torrent.yazi](preview-torrent.yazi) - basic info like name, size, files etc
 - [preview-typst.yazi](preview-typst.yazi) - shows `.typ` files after rendering
-- [preview-template.yazi](preview-template.yazi) - example plugin for reuse
 
 ## functional
 

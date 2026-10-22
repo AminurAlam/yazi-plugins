@@ -25,12 +25,12 @@ function M:setup(config)
   set_config(default)
 
   for _, mime in ipairs(default.mimes or {}) do
-    rt.plugin.previewers:insert(1, { mime = mime, run = 'preview-xxx' })
-    rt.plugin.preloaders:insert(1, { mime = mime, run = 'preview-xxx' })
+    rt.plugin.previewers:insert(1, { mime = mime, run = 'preview-font' })
+    rt.plugin.preloaders:insert(1, { mime = mime, run = 'preview-font' })
   end
   for _, url in ipairs(default.urls or {}) do
-    rt.plugin.previewers:insert(1, { url = url, run = 'preview-xxx' })
-    rt.plugin.preloaders:insert(1, { url = url, run = 'preview-xxx' })
+    rt.plugin.previewers:insert(1, { url = url, run = 'preview-font' })
+    rt.plugin.preloaders:insert(1, { url = url, run = 'preview-font' })
   end
 end
 

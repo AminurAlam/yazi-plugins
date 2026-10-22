@@ -24,7 +24,7 @@ Font with custom text
 # Installation
 
 ```sh
-ya pkg add AminurAlam/yazi-plugins:font-sample
+ya pkg add AminurAlam/yazi-plugins:preview-font
 ```
 
 # Dependencies
