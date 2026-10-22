@@ -38,6 +38,9 @@ File = File
 ---@class (exact) rt
 ---@field plugin { fetchers: plugin, spotters: plugin, previewers: plugin, preloaders: plugin }
 
+---@class (exact) rt__Args
+---@field chooser_file Url?
+
 ---@class (exact) plugin
 ---@field insert fun(self, id: integer, table)
 ---@field match fun() table
@@ -49,7 +52,7 @@ File = File
 ---@alias Key string|string[]
 
 -- imgdir.yazi
----@alias ImgDirConf { cols: integer, rows: integer, width: integer, height: integer, background: string, patterns: string[] }
+---@alias ImgDirConf { cols: integer, rows: integer, width: integer, height: integer, background: string, urls: string[] }
 
 -- fchar.yazi
 ---@alias FCharConf { insensitive: boolean, skip_symbols: boolean, skip_prefix: string[], aliases: table<string, string>, keys: {start: Key?, ext: Key?, word: Key?, all: Key?} }

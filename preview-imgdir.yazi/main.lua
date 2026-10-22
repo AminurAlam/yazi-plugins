@@ -14,7 +14,7 @@ local get_config = ya.sync(function(st)
       width = 480,
       height = 480,
       background = '#fff',
-      patterns = {},
+      urls = {},
     }
 end)
 
@@ -59,7 +59,7 @@ function M:setup(config)
   set_config(tbl_extend(get_config(), config))
 
   local config = get_config()
-  for _, url in ipairs(config.patterns or {}) do
+  for _, url in ipairs(config.urls or {}) do
     rt.plugin.previewers:insert(1, { url = url, run = 'preview-imgdir' })
     rt.plugin.preloaders:insert(1, { url = url, run = 'preview-imgdir' })
   end

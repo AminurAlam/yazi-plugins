@@ -17,5 +17,23 @@ ya pkg add AminurAlam/yazi-plugins:preview-imgdir
 in `~/.config/yazi/init.lua`
 
 ```lua
-require('preview-imgdir').setup()
+-- default config
+require('preview-imgdir').setup({
+  cols = 2,
+  rows = 3,
+  width = 480,
+  height = 480,
+  background = '#fff',
+  urls = {},
+})
+
+-- pass directories on which the previewer should run
+require('preview-imgdir').setup({
+  urls = {
+    '/home/user/Video/screenshots/*/', -- use for a list of dirs
+    '/home/user/Pictures/**/', -- use for all subdirectories
+    '/home/user/Pictures/{cats,dogs}/', -- use for some specific dirs
+    ...
+  }
+})
 ```
