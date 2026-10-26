@@ -5,30 +5,31 @@ local M = {}
 
 ---@param job Job
 function M:peek(job)
-  local output, err = Command('aria2c'):arg({ '-S', tostring(job.file.url) }):output()
+  local child, err = Command('aria2c')
+    :arg({ '-S', tostring(job.file.path) })
+    :stdout(Command.PIPED)
+    :stderr(Command.PIPED)
+    :spawn()
 
-  local out
-  if not output then
-    out = { Err('Failed to start `aria2c`: %s', err) }
-  elseif not output.status.success then
-    out = { Err('stderr: %s', output.stderr) }
-  else
-    out = {}
-    local skip = job.skip
-    for i in output.stdout:gmatch('[^\n]+') do
-      if skip < 1 then
-        out[#out + 1] = i
-      else
-        skip = skip - 1
-      end
-      if #out > job.area.h then
-        break
-      end
-    end
-    if #out < job.area.h then
-      ya.emit('peek', { job.skip - 1, only_if = job.file.url, upper_bound = true })
-    end
+  if not child then
+    ya.preview_widget(job, ui.List({ Err('Failed to start `aria2c`: %s', err) }):area(job.area))
+    return
   end
+
+  local skip, h, out = job.skip, job.area.h, {}
+  -- local fin
+  for _ = 1, skip do
+    child:read_line()
+  end
+  for _ = 1, h do
+    local line, event = child:read_line()
+    if not line or event ~= 0 then
+      -- fin = true
+      break
+    end
+    out[#out + 1] = line
+  end
+  -- ya.dbg(skip, fin, #out - h)
   ya.preview_widget(job, ui.List(out):area(job.area))
 end
 
@@ -38,12 +39,13 @@ function M:seek(job)
     return
   end
 
-  local step = math.floor(job.units * job.area.h / 25)
+  local step = math.floor(job.units * job.area.h / 15)
   step = step == 0 and ya.clamp(-1, job.units, 1) or step
 
   ya.emit('peek', {
     math.max(0, cx.active.preview.skip + step),
     only_if = job.file.url,
+    tab = job.tab,
   })
 end
 
