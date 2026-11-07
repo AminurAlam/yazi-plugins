@@ -23,6 +23,7 @@
 ## functional
 
 - [fchar.yazi](fchar.yazi) - `jump-to-char` with more features
+- [fs-usage.yazi](fs-usage.yazi) - shows used storage of current mount point using `df`
 - [nextension.yazi](nextension.yazi) - jump to next file with different extension than current one
 - [sort-by-location.yazi](sort-by-location.yazi) - set sorting for individual directories
 
@@ -31,7 +32,6 @@
 ## WIP Plugins (may be broken)
 
 - [fselect.yazi](fselect.yazi)
-- [fs-usage.yazi](fs-usage.yazi)
 - [last-visual.yazi](last-visual.yazi)
 - [max-pane.yazi](max-pane.yazi) - maximize panes
 - [preview-imgdir.yazi](preview-imgdir.yazi) - preview directory that contains images as a grid of images
