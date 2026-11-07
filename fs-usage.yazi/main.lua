@@ -98,7 +98,7 @@ end
 ---@return string source Current filesystem name
 ---@return number? usage Usage percent (0-100), if parseable
 local function process_df_output(stdout)
-  local source, usage = stdout:match('\n(%S+)%s+%d+%s+%d+%s+%d+%s+([%d%-]+)%%%s+')
+  local usage, source = stdout:match('\n%S+%s+%d+%s+%d+%s+%d+%s+([%d%-]+)%%%s+(.*)\n')
 
   -- Follow symlinks in source
   if string.sub(source, 1, 1) == '/' then
@@ -268,6 +268,11 @@ local function entry(_, job)
   -- Don't set cwd directly for Command() here, it hangs for dirs without read perms
   -- cwd is fine as an argument to df though
   local output = Command('df'):arg({ tostring(cwd) }):output()
+
+  if not output then
+    set_state(nil, nil, nil, nil)
+    return
+  end
 
   -- If df fails, hide the module
   if not output.status.success then
