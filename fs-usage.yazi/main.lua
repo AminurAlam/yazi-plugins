@@ -7,6 +7,7 @@ local DEFAULT_OPTIONS = {
   format = 'both',
   bar = true,
   warning_threshold = 90,
+  min_width = 12,
   style_label = {},
   style_normal = {},
   style_warning = {},
@@ -114,8 +115,9 @@ end
 ---@param source string Current filesystem name
 ---@param usage number Usage percent (0-100)
 ---@param format string Format string
+---@param min_width integer minimum bar width
 ---@return string text Formatted bar text
-local function format_text(source, usage, format)
+local function format_text(source, usage, format, min_width)
   local text = ''
   if format == 'both' then
     text = string.format('%s: %d%%', source, usage)
@@ -123,6 +125,9 @@ local function format_text(source, usage, format)
     text = string.format('%s', source)
   elseif format == 'usage' then
     text = string.format('%d%%', usage)
+  end
+  if #text < min_width then
+    text = text .. string.rep(' ', min_width - #text)
   end
   return text
 end
@@ -150,6 +155,7 @@ local get_state = ya.sync(function(st)
     format = st.format,
     bar = st.bar,
     padding = st.padding,
+    min_width = st.min_width,
 
     -- Variables
     source = st.source,
@@ -191,6 +197,7 @@ local function setup(st, opts)
   st.style_normal = opts.style_normal
   st.style_warning = opts.style_warning
   st.padding = opts.padding
+  st.min_width = opts.min_width
   st.style = build_style(opts.style_label, opts.style_normal, opts.style_warning)
 
   -- Add the component to the parent
@@ -247,7 +254,7 @@ local function setup(st, opts)
   local function callback()
     ya.emit('plugin', {
       st._id,
-      ya.quote(tostring(cx.active.current.cwd), true),
+      ya.quote(tostring(cx.active.current.cwd)),
     })
   end
 
@@ -296,8 +303,8 @@ local function entry(_, job)
     return
   end
 
-  local text = format_text(source, usage, st.format)
-  local bar_len = 0 -- Start with no bar by default
+  local text = format_text(source, usage, st.format, st.min_width)
+  local bar_len = 0 ---@type integer? Start with no bar by default
 
   -- Only calculate bar length if the bar will be shown
   if st.bar then
@@ -305,7 +312,8 @@ local function entry(_, job)
 
     -- Using ceil so the bar is only empty at 0%
     -- Using len - 1 so the bar isn't full until 100%
-    bar_len = usage < 100 and math.ceil((total_len - 1) / 100 * usage) or total_len
+    bar_len = (usage < 100) and math.ceil((total_len - 1) / 100 * usage) or total_len
+    -- bar_len = bar_len + 5
   end
 
   set_state(source, usage, text, bar_len)
