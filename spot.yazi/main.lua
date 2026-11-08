@@ -316,7 +316,7 @@ function M:render_table(job, extra, config)
 
   -- Plugins
   if config.plugins_section.enable then
-    ---@type fun(type: "fetchers"|"spotters"|"previewers"|"preloaders") string
+    ---@type fun(type: "fetchers"|"spotters"|"previewers"|"preloaders"): string
     local get_plugin = function(type)
       local text = ''
       for _, plugin in pairs(rt.plugin[type]:match({ mime = job.mime, file = job.file })) do

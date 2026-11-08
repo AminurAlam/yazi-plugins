@@ -42,9 +42,9 @@ File = File
 ---@field chooser_file Url?
 
 ---@class (exact) plugin
----@field insert fun(self, id: integer, table)
----@field match fun() table
----@field remove fun(self, matcher: { id: integer })
+---@field insert fun(self: plugin, id: integer, data: table)
+---@field match fun(self: plugin, data: table?): { url: Url?, mime: string?, run: { name: string } }[]
+---@field remove fun(self: plugin, data: table)
 
 ---@class th
 

@@ -35,7 +35,7 @@ prepend_spotters = [
 in `~/.config/yazi/init.lua`
 
 ```lua
-require('spot'):setup {
+require('spot'):setup({
   metadata_section = {
     enable = true,
     hash_cmd = 'xxhsum', -- other hashing commands may be slower
@@ -67,7 +67,7 @@ require('spot'):setup {
     max_key_length = 25,
     key_indent_size = 2,
   },
-}
+})
 ```
 
 # Footnote

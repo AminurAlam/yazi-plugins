@@ -2,7 +2,7 @@
 
 this plugin was forked from <https://github.com/walldmtd/fs-usage.yazi>
 
-# Features
+# Additional Features
 
 - works with toybox's `df`
 - uses a minimum size for bar
@@ -19,7 +19,7 @@ ya pkg add AminurAlam/yazi-plugins:fs-usage
 in `~/.config/yazi/init.lua`
 
 ```lua
-require('fs-usage'):setup {
+require('fs-usage'):setup({
   -- All values are optional
 
   -- Position of the component
@@ -81,5 +81,5 @@ require('fs-usage'):setup {
   --   or { open = "", close = "" } for no padding
   -- Default: { open = "", close = "" }
   padding = { open = "", close = "" }
-}
+})
 ```

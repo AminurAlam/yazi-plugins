@@ -14,7 +14,7 @@ in `~/.config/yazi/init.lua`
 
 ```lua
 -- this is optional, use this if you want to change the default bindings
-require('nextension'):setup { fwd = '}', bwd = '{' }
+require('nextension'):setup({ fwd = '}', bwd = '{' })
 ```
 
 in `~/.config/yazi/yazi.toml`
