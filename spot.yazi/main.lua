@@ -187,12 +187,22 @@ local get_total_size = function(urls)
   local total = 0
   for _, url in ipairs(urls) do
     local it = fs.calc_size(url)
-    while it do
-      local next = it:recv() ---@diagnostic disable-line: undefined-field
-      if next then
-        total = total + next
-      else
-        break
+    if ya.iter then -- TODO: remove on stable
+      for next in it do
+        if next then
+          total = total + next
+        else
+          break
+        end
+      end
+    else
+      while it do
+        local next = it:recv() ---@diagnostic disable-line: undefined-field
+        if next then
+          total = total + next
+        else
+          break
+        end
       end
     end
   end
@@ -319,11 +329,20 @@ function M:render_table(job, extra, config)
     ---@type fun(type: "fetchers"|"spotters"|"previewers"|"preloaders"): string
     local get_plugin = function(type)
       local text = ''
-      for _, plugin in pairs(rt.plugin[type]:match({ mime = job.mime, file = job.file })) do
-        local nightly, name = pcall(function()
-          return plugin.run.name .. '(' .. plugin.id .. ')'
-        end) -- TODO: remove
-        text = text .. (nightly and name or plugin.name) .. ', '
+      if ya.iter then
+        for plugin in rt.plugin[type]:match({ mime = job.mime, file = job.file }) do
+          local nightly, name = pcall(function()
+            return plugin.run.name .. '(' .. plugin.id .. ')'
+          end) -- TODO: remove
+          text = text .. (nightly and name or plugin.name) .. ', '
+        end
+      else
+        for _, plugin in pairs(rt.plugin[type]:match({ mime = job.mime, file = job.file })) do
+          local nightly, name = pcall(function()
+            return plugin.run.name .. '(' .. plugin.id .. ')'
+          end) -- TODO: remove
+          text = text .. (nightly and name or plugin.name) .. ', '
+        end
       end
       -- ya.dbg(text)
       return text:sub(1, -3)
