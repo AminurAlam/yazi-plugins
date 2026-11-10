@@ -3,9 +3,6 @@
 ---@diagnostic disable: duplicate-doc-alias
 ---@diagnostic disable: duplicate-doc-field
 
----@type File
-File = File
-
 ---@class Time
 ---@field unix number
 
@@ -14,7 +11,7 @@ File = File
 ---@field skip number
 ---@field units number
 ---@field mime string
----@field area ui.Rect
+---@field area ui.Rect|ui.Pos
 ---@field args string[]
 
 ---@class (exact) Command
@@ -22,6 +19,50 @@ File = File
 
 ---@class (exact) tab__Tab
 ---@field finder boolean
+
+---@class (exact) ya taken from yazi-plugin/src/utils/utils.rs
+---@field iter fun(array: table): Iter
+---@field json_decode fun(data: string): table?, Error?
+---@field json_encode fun(data: table): string?, Error?
+---@field spot_table fun(t: table, tt: Table): string?, Error?
+
+---@class (exact) Table taken from yazi-binding/src/elements/table.rs
+--- defined as methods
+---@field header fun(self, header: Row): Table
+---@field footer fun(self, footer: Row): Table
+---@field widths fun(self, widths: ui.Constraint[]): Table
+---@field spacing fun(self, spacing: integer): Table
+---@field row fun(self, idx: integer?): Table
+---@field col fun(self, idx: integer?): Table
+---@field style fun(self, style: ui.Style): Table
+---@field row_style fun(self, style: ui.Style): Table
+---@field col_style fun(self, style: ui.Style): Table
+---@field cell_style fun(self, style: ui.Style): Table
+--- defined in impl
+---@field area fun(self, area: ui.Rect|ui.Pos): Table
+---
+---@field rows Row[]
+---@field header Row?
+---@field footer Row?
+---@field widths ui.Constraint[]
+---@field column_spacing integer
+---@field style ui.Style
+---@field row_highlight_style ui.Style
+---@field column_highlight_style ui.Style
+---@field cell_highlight_style ui.Style
+
+--@field flex ratatui_core::layout::Flex
+--@field state ratatui_widgets::table::TableState
+--@field block ui.Block? // TODO
+--@field highlight_symbol ui.Text // TODO
+--@field highlight_spacing 'Always'|'WhenSelected'|'Never' // TODO
+
+---@class (exact) Row
+---@field cells ui.Text[]
+---@field height integer
+---@field top_margin integer
+---@field bottom_margin integer
+---@field style ui.Style
 
 ---@class (exact) Iter
 ---@field all fun(self, f: function): boolean, Error? returns whether every item passes `f`
@@ -43,20 +84,23 @@ File = File
 ---@field unzip fun(self, n: 1): table, Error?
 ---@field unzip fun(self, n: 2): table, table, Error?
 ---@field unzip fun(self, n: 3): table, table, table, Error?
----@field unzip fun(self, n: integer): table..., Error? splits the first `n` returned values into separate arrays
-
----@class (exact) ya
----@field manager_emit fun(command: string, opts: table)
----@field json_decode fun(data: string): table
----@field image_info fun(path: Url): table
----@field iter fun(array: table): Iter
+--@field unzip fun(self, n: integer): table..., Error? splits the first `n` returned values into separate arrays
 
 ---@class (exact) ui
 ---@field truncate fun(data: string, opts: table): string
 ---@field redraw fun(data: table): table
+---@field Row fun(row: table): Row
+---@field Table fun(rows: Row[]): Table
 
 ---@class (exact) fs
 ---@field calc_size fun(url: Url): integer
+---@field read_dir fun(url: Url): DirEntry[]?, Error?
+
+---@class (exact) DirEntry
+---@field name string  - the directory entry name
+---@field url string - the directory entry URL
+---@field lstat fun(self): any?, Error? - gets the entry's `Stat` without following symlinks
+---@field file fun(self): File?, Error? - gets the entry's `File`
 
 ---@class (exact) rt
 ---@field plugin { fetchers: plugin, spotters: plugin, previewers: plugin, preloaders: plugin }

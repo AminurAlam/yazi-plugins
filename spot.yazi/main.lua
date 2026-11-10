@@ -227,9 +227,9 @@ end
 ---@param job Job
 ---@param extra table
 ---@param config SpotConf
----@return Renderable
+---@return Table
 function M:render_table(job, extra, config)
-  local rows = {}
+  local rows = {} ---@type Row[]
   local key_pad = config.style.key_indent_size
   local key_width = 0
   local val_width = 0
@@ -250,7 +250,7 @@ function M:render_table(job, extra, config)
   ---@param section Section
   local add_section = function(section)
     if #rows ~= 0 then
-      rows[#rows + 1] = ui.Row({}) ---@diagnostic disable-line: undefined-field
+      rows[#rows + 1] = ui.Row({})
     end
 
     rows[#rows + 1] = ui.Row({
@@ -359,8 +359,7 @@ function M:render_table(job, extra, config)
   key_width = math.min(config.style.max_key_length, key_pad + key_width)
   local conf_size = config.style.size
 
-  return ui
-    .Table(rows) ---@diagnostic disable-line: undefined-field
+  return ui.Table(rows)
     :area(ui.Pos {
       'center',
       w = conf_size.auto_resize
@@ -383,7 +382,7 @@ end
 ---@param config SpotConf
 function M:spot(job, extra, config)
   config = tbl_strict_extend(get_config(), config) ---@type SpotConf
-  ya.spot_table(job, self:render_table(job, extra, config)) ---@diagnostic disable-line: undefined-field
+  ya.spot_table(job, self:render_table(job, extra, config))
 end
 
 return M
